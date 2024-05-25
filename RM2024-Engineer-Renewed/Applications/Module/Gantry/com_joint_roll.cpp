@@ -67,8 +67,6 @@ ERpStatus CModGantry::CComJointRoll::UpdateComponent() {
 
     case 0: {   // Lift Reset
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 

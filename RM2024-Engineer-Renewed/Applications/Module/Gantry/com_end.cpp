@@ -80,8 +80,6 @@ ERpStatus CModGantry::CComEnd::UpdateComponent() {
 
     case END_RESET: {
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 

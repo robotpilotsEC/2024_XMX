@@ -39,14 +39,14 @@ public:
 
   struct SGimbalInfo {
     EFuncStatus isModuleAvailable = false;    ///< Is Gimbal Module Available
-    float_t posit_Lift            = 0.0f;     ///< Gimbal Lift Posit (Range: 0mm ~ 280mm)
+    float_t posit_Lift            = 0.0f;     ///< Gimbal Lift Posit (Range: 0mm ~ 240mm)
     uint32_t step_pitch           = 0;        ///< Gimbal Pitch Step (0 - MID, 1 - UP, 2 - DOWN)
     bool isPositArrived_Lift      = false;    ///< Is Gimbal Lift Posit Arrived
   } gimbalInfo;
 
   struct SGimbalCmd {
-    bool isAutoCtrl       = false;         ///< Is Auto Control
-    float_t setPosit_Lift = 150.0f;        ///< Set Gimbal Lift Posit (Range: 0mm ~ 280mm)
+    bool isAutoCtrl        = false;        ///< Is Auto Control
+    float_t setPosit_Lift  = 80.0f;        ///< Set Gimbal Lift Posit (Range: 0mm ~ 240mm)
     uint32_t setStep_Pitch = 0;            ///< Set Gimbal Pitch Step (0 - MID, 1 - UP, 2 - DOWN)
   } gimbalCmd;
 
@@ -105,7 +105,7 @@ private:
   class CComPitch final : public CComponent {
   public:
 
-    const int32_t rangeLimit = 37000;
+    const int32_t rangeLimit = 35000;
 
     struct SPitchInfo {
       int32_t posit = 0;
@@ -113,7 +113,7 @@ private:
     } pitchInfo;
 
     struct SPitchCmd {
-      uint32_t setPosit = 0;
+      int32_t setPosit = 0;
     } pitchCmd;
 
     std::array<CMtrInstance *, 1> motor = {nullptr};

@@ -72,8 +72,6 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
     case PITCH_RESET: {
 
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -92,11 +90,11 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
     case PITCH_INIT: {
 
       if (motor[0]->motorState == CMtrInstance::EMotorStatus::STALL) {
-        motor[0]->motorData[CMtrInstance::DATA_POSIT] = +8192 * 1.0;
+        motor[0]->motorData[CMtrInstance::DATA_POSIT] = 8192 * 0.5;
+        mtrOutputBuffer.fill(0);
         pidPosCtrl.ResetAlgorithm();
         pidSpdCtrl.ResetAlgorithm();
-
-        pitchCmd.setPosit = 0;
+        pitchCmd.setPosit = 17000;
         componentState    = RP_OK;
         processFlag_      = PITCH_CTRL;// Enter PITCH_CTRL
         return RP_OK;
@@ -108,7 +106,8 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
 
     case PITCH_CTRL: {
 
-      return RP_OK;
+      pitchCmd.setPosit = std::clamp(pitchCmd.setPosit, 0l, rangeLimit);
+      return _UpdateOutput(static_cast<float_t>(pitchCmd.setPosit));
     }
 
     default: {
@@ -127,23 +126,23 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
  */
 ERpStatus CModGimbal::CComPitch::_UpdateOutput(float_t posit) {
 
-  DataBuffer<float_t> liftPos = {
+  DataBuffer<float_t> pitchPos = {
     static_cast<float_t>(-posit),
   };
 
-  DataBuffer<float_t> liftPosMeasure = {
+  DataBuffer<float_t> pitchPosMeasure = {
     static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]),
   };
 
-  auto liftSpd =
-    pidPosCtrl.UpdatePidController(liftPos, liftPosMeasure);
+  auto pitchSpd =
+    pidPosCtrl.UpdatePidController(pitchPos, pitchPosMeasure);
 
-  DataBuffer<float_t> liftSpdMeasure = {
+  DataBuffer<float_t> pitchSpdMeasure = {
     static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]),
   };
 
   auto output =
-    pidSpdCtrl.UpdatePidController(liftSpd, liftSpdMeasure);
+    pidSpdCtrl.UpdatePidController(pitchSpd, pitchSpdMeasure);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[0]),

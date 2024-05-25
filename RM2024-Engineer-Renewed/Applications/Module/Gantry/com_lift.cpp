@@ -69,8 +69,6 @@ ERpStatus CModGantry::CComLift::UpdateComponent() {
 
     case 0: {   // Lift Reset
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -126,7 +124,7 @@ ERpStatus CModGantry::CComLift::UpdateComponent() {
 int32_t CModGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 2000.0f;
+  const float_t scale = 1785.71f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -140,7 +138,7 @@ int32_t CModGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 float_t CModGantry::CComLift::MtrPositToPhyPosit(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 2000.0f;
+  const float_t scale = 1785.71f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

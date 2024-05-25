@@ -67,12 +67,12 @@ ERpStatus InitializeModule() {
   gimbalInitParam.pitchPosPidParam.kp = 0.3f;
   gimbalInitParam.pitchPosPidParam.ki = 0.0f;
   gimbalInitParam.pitchPosPidParam.kd = 0.0f;
-  gimbalInitParam.pitchPosPidParam.maxOutput = 4000;
-  gimbalInitParam.pitchSpdPidParam.kp = 5.0f;
+  gimbalInitParam.pitchPosPidParam.maxOutput = 3000;
+  gimbalInitParam.pitchSpdPidParam.kp = 3.0f;
   gimbalInitParam.pitchSpdPidParam.ki = 0.3f;
   gimbalInitParam.pitchSpdPidParam.kd = 0.0f;
-  gimbalInitParam.pitchSpdPidParam.maxInteger = 5000;
-  gimbalInitParam.pitchSpdPidParam.maxOutput = 6000;
+  gimbalInitParam.pitchSpdPidParam.maxInteger = 2000;
+  gimbalInitParam.pitchSpdPidParam.maxOutput = 3000;
   static auto gimbalModule = CModGimbal(gimbalInitParam);
 
   /* Initialize Gantry Module */

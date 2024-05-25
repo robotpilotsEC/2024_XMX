@@ -136,7 +136,7 @@ void CSysVision::StartSysVisionTask(void *arg) {
     raceInfo.raceState = 0;
     SysVision.vision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
 
-    proc_waitMs(50);    // 20Hz
+    proc_waitMs(3);    // 20Hz
   }
 
 }

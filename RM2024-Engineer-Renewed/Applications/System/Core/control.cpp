@@ -102,7 +102,8 @@ void CSystemCore::ControlFromKeyboard_() {
     if (!gimbal_->gimbalInfo.isModuleAvailable && gimbal_->moduleState == RP_OK)
       gimbal_->StartModule();
 
-    if (!gantry_->gantryInfo.isModuleAvailable && gantry_->moduleState == RP_OK && keyboard.key_Ctrl && keyboard.key_R)
+    if (!gantry_->gantryInfo.isModuleAvailable && gantry_->moduleState == RP_OK
+        && keyboard.key_Ctrl && keyboard.key_R)
       gantry_->StartModule();
   }
 

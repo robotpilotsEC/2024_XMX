@@ -68,7 +68,7 @@ public:
   struct SGantryInfo {
     EFuncStatus isModuleAvailable  = false;        ///< Is Gantry Module Available
     bool isPumpOn                  = false;        ///< Is Pump On
-    float_t posit_Lift             = 0.0f;         ///< Gantry Lift Position (Range: 0mm ~ 660mm)
+    float_t posit_Lift             = 0.0f;         ///< Gantry Lift Position (Range: 0mm ~ 560mm)
     float_t posit_Stretch          = 0.0f;         ///< Gantry Stretch Position (Range: 0mm ~ 420mm)
     float_t posit_Traverse         = 0.0f;         ///< Gantry Traverse Position (Range: -90mm ~ 90mm)
     float_t angle_Joint_Yaw        = 0.0f;         ///< Gantry Joint Yaw Angle (Range: -90° ~ 180°)
@@ -87,7 +87,7 @@ public:
   struct SGantryCmd {
     bool isAutoCtrl             = false;       ///< Is Automatic Control
     bool setPumpOn              = false;       ///< Set Pump On
-    float_t setPosit_Lift       = 0.0f;        ///< Gantry Lift Position (Range: 0mm ~ 660mm)
+    float_t setPosit_Lift       = 0.0f;        ///< Gantry Lift Position (Range: 0mm ~ 560mm)
     float_t setPosit_Stretch    = 0.0f;        ///< Gantry Stretch Position (Range: 0mm ~ 420mm)
     float_t setPosit_Traverse   = 0.0f;        ///< Gantry Traverse Position (Range: -90mm ~ 90mm)
     float_t setAngle_Joint_Yaw  = 180.0f;      ///< Gantry Joint Yaw Angle (Range: -90° ~ 180°)

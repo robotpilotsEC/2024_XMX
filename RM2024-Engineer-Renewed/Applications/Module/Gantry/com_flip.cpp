@@ -71,7 +71,6 @@ ERpStatus CModGantry::CComFlip::UpdateComponent() {
     case FLIP_RESET: {
 
       mtrOutputBuffer.fill(0);
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -80,6 +79,7 @@ ERpStatus CModGantry::CComFlip::UpdateComponent() {
       mtrOutputBuffer.fill(0);
       pidSpdCtrl.ResetAlgorithm();
 
+      processFlag_ = FLIP_CTRL;
       componentState = RP_OK;
       return RP_OK;
     }

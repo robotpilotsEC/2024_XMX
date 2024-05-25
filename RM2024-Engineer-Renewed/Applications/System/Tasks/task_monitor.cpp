@@ -26,17 +26,31 @@ namespace robotpilots {
 void StartMonitorTask(void *arg) {
 
   auto *uart = reinterpret_cast<CUartInterface *>(InterfaceMap.at(EInterfaceID::INF_UART10));
-
-  int32_t mtrAngle[2];
+  auto *vision = reinterpret_cast<CSysVision *>(SystemMap.at(ESystemID::SYS_VISION));
 
   /* Monitor Task */
   while (true) {
 
-    mtrAngle[0] = MotorMap.at(EDeviceID::DEV_LIFT_MTR_L)->motorData[CMtrInstance::DATA_POSIT];
-    mtrAngle[1] = MotorMap.at(EDeviceID::DEV_LIFT_MTR_R)->motorData[CMtrInstance::DATA_POSIT];
+    uart->FormatTransmit("Robot ID: %d, Camp ID: %d\n",
+                         SysReferee.refereeInfo.robot.robotID,
+                         SysReferee.refereeInfo.robot.robotCamp);
 
-    uart->FormatTransmit("L: %d, R %d\r\n",
-                         mtrAngle[0], mtrAngle[1]);
+    if (SysVision.systemState != RP_OK) {
+      uart->FormatTransmit("Vision System Error!\n");
+    } else {
+      if (vision->visionInfo.oreTank.isFoundOreTank) {
+        uart->FormatTransmit("YPR: %d, %d, %d\n",
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_YAW),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_PITCH),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_ROLL));
+        uart->FormatTransmit("XYZ: %d, %d, %d\n",
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_X),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Y),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Z));
+      } else {
+        uart->FormatTransmit("Ore Tank Not Found!\n");
+      }
+    }
 
     proc_waitMs(100);  // 10Hz
   }

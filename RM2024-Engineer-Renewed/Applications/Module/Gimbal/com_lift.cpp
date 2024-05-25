@@ -78,8 +78,6 @@ ERpStatus CModGimbal::CComLift::UpdateComponent() {
     case LIFT_RESET: {
 
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -143,7 +141,7 @@ ERpStatus CModGimbal::CComLift::UpdateComponent() {
 int32_t CModGimbal::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 3142.85f;
+  const float_t scale = 3125.0f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -157,7 +155,7 @@ int32_t CModGimbal::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 float_t CModGimbal::CComLift::MtrPositToPhyPosit(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 3142.85f;
+  const float_t scale = 3125.0f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }
