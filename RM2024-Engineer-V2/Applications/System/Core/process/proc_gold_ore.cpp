@@ -48,18 +48,18 @@ void CSystemCore::StartGoldOreTask(void *arg) {
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 0.0f;
 
       core.gantry_->gantryCmd.setPumpOn_C = false;
-      proc_waitMs(500);
       core.gantry_->gantryCmd.setPosit_Lift = 120.0f;
-      core.gantry_->gantryCmd.setPosit_Stretch = 160.0f;
+      core.gantry_->gantryCmd.setPosit_Stretch = 200.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
-      core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Pitch = -5.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
         proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
       core.gantry_->gantryCmd.setPumpOn_C = true;
 
       /* Wait for User Confirmation */
+      proc_waitMs(500);
       core.gantry_->gantryCmd.isAutoCtrl = false;
       cnt = timeout;
       while (cnt--) {
@@ -77,8 +77,24 @@ void CSystemCore::StartGoldOreTask(void *arg) {
       core.gantry_->gantryCmd.setPosit_Stretch =
         core.gantry_->gantryInfo.posit_Stretch - 20.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
-      core.gantry_->gantryCmd.setPosit_Lift += 30.0f;
+      core.gantry_->gantryCmd.setPosit_Lift += 50.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift);
+
+      /* Wait for User Confirmation */
+      proc_waitMs(500);
+      core.gantry_->gantryCmd.isAutoCtrl = false;
+      cnt = timeout;
+      while (cnt--) {
+        if (SysRemote.remoteInfo.keyboard.key_Ctrl) {
+          if (SysRemote.remoteInfo.keyboard.mouse_L) break;
+          if (SysRemote.remoteInfo.keyboard.mouse_R) goto proc_exit;
+        }
+        proc_waitMs(5);
+      }
+      if (cnt == 0) goto proc_exit;
+
+      /* Step 3 */
+      core.gantry_->gantryCmd.isAutoCtrl = true;
       core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
       break;
     }
@@ -133,9 +149,9 @@ void CSystemCore::StartGoldOreTask(void *arg) {
       core.gantry_->gantryCmd.setPumpOn_R = true;
       core.subgantry_->subGantryCmd.setPosit_Stretch_L = 280.0f;
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 350.0f;
-      proc_waitMs(500);
 
       /* Wait for User Confirmation */
+      proc_waitMs(500);
       cnt = timeout;
       while (cnt--) {
         if (SysRemote.remoteInfo.keyboard.key_Ctrl) {

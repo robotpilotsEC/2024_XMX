@@ -128,15 +128,38 @@ void CSystemCore::ControlFromKeyboard_() {
 
   chassis_->chassisCmd.speed_W = keyboard.mouse_X / 2;
   if (keyboard.key_Shift) {
-    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 100.0f;
+    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 50.0f;
     chassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 100.0f;
   } else {
-    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 30.0f;
+    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 20.0f;
     chassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 30.0f;
     chassis_->chassisCmd.speed_X =
       std::clamp(chassis_->chassisCmd.speed_X, -30.0f, 30.0f);
     chassis_->chassisCmd.speed_Y =
       std::clamp(chassis_->chassisCmd.speed_Y, -30.0f, 30.0f);
+  }
+
+  /* Gantry Manual Control */
+  if (!keyboard.key_Ctrl
+      && !gantry_->gantryCmd.isAutoCtrl) {
+    if (keyboard.key_Q)
+      gantry_->gantryCmd.setPosit_Lift += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 150.0f / freq;
+    if (keyboard.key_E)
+      gantry_->gantryCmd.setPosit_Stretch += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 150.0f / freq;
+    if (keyboard.key_R)
+      gantry_->gantryCmd.setPosit_Traverse -= static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 100.0f / freq;
+    if (keyboard.key_Z)
+      gantry_->gantryCmd.setAngle_Joint_Yaw -= static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
+    if (keyboard.key_X)
+      gantry_->gantryCmd.setAngle_Joint_Roll += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
+    if (keyboard.key_C)
+      gantry_->gantryCmd.setAngle_End_Pitch += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
+    if (keyboard.key_V)
+      gantry_->gantryCmd.setAngle_End_Roll += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
+    if (keyboard.key_B) {
+      if (keyboard.mouse_L) gantry_->gantryCmd.setPumpOn_C = true;
+      if (keyboard.mouse_R) gantry_->gantryCmd.setPumpOn_C = false;
+    }
   }
 
   /* Gantry Auto Control */
@@ -170,29 +193,6 @@ void CSystemCore::ControlFromKeyboard_() {
       StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE);
   }
 
-  /* Gantry Manual Control */
-  if (!keyboard.key_Ctrl
-      && !gantry_->gantryCmd.isAutoCtrl) {
-
-    if (keyboard.key_Q)
-      gantry_->gantryCmd.setPosit_Lift += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 150.0f / freq;
-    if (keyboard.key_E)
-      gantry_->gantryCmd.setPosit_Stretch += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 150.0f / freq;
-    if (keyboard.key_R)
-      gantry_->gantryCmd.setPosit_Traverse -= static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 100.0f / freq;
-    if (keyboard.key_Z)
-      gantry_->gantryCmd.setAngle_Joint_Yaw -= static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
-    if (keyboard.key_X)
-      gantry_->gantryCmd.setAngle_Joint_Roll += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
-    if (keyboard.key_C)
-      gantry_->gantryCmd.setAngle_End_Pitch += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
-    if (keyboard.key_V)
-      gantry_->gantryCmd.setAngle_End_Roll += static_cast<float_t>((keyboard.mouse_L - keyboard.mouse_R)) * 90.0f / freq;
-    if (keyboard.key_B) {
-      if (keyboard.mouse_L) gantry_->gantryCmd.setPumpOn_C = true;
-      if (keyboard.mouse_R) gantry_->gantryCmd.setPumpOn_C = false;
-    }
-  }
 }
 
 } // namespace robotpilots

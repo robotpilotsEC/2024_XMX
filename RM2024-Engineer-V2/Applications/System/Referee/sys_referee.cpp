@@ -45,6 +45,8 @@ ERpStatus CSysReferee::InitSystem(SSystemInitParam *pStruct) {
               512, nullptr, 5,
               &systemTaskHandle);
 
+  InitUiDrawing();
+
   RegisterSystem_();
 
   systemState = RP_ERROR;
@@ -61,6 +63,7 @@ void CSysReferee::UpdateHandler_() {
 
   UpdateRaceInfo_();
   UpdateRobotInfo_();
+  UpdateUiDrawing_();
 }
 
 

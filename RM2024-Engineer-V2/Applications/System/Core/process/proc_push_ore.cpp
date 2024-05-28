@@ -43,6 +43,8 @@ void CSystemCore::StartPushOreTask(void *arg) {
     if (SysRemote.remoteInfo.keyboard.mouse_L) {
 
       /* Step 1 */
+      core.gimbal_->gimbalCmd.setPosit_Lift = 150.0f;
+      core.gimbal_->gimbalCmd.setStep_Pitch = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Stretch_L = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
@@ -83,11 +85,11 @@ void CSystemCore::StartPushOreTask(void *arg) {
       proc_waitMs(500);
       core.gantry_->gantryCmd.setPosit_Stretch = 410.0;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
-      core.gantry_->gantryCmd.setPosit_Traverse = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Traverse
                      && core.gantry_->gantryInfo.isPositArrived_Joint_Yaw);
       core.gantry_->gantryCmd.setPosit_Stretch = 0.0;
@@ -98,6 +100,8 @@ void CSystemCore::StartPushOreTask(void *arg) {
     if (SysRemote.remoteInfo.keyboard.mouse_R) {
 
       /* Step 1 */
+      core.gimbal_->gimbalCmd.setPosit_Lift = 150.0f;
+      core.gimbal_->gimbalCmd.setStep_Pitch = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Stretch_L = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
@@ -138,11 +142,11 @@ void CSystemCore::StartPushOreTask(void *arg) {
       proc_waitMs(500);
       core.gantry_->gantryCmd.setPosit_Stretch = 410.0;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
-      core.gantry_->gantryCmd.setPosit_Traverse = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Traverse
                      && core.gantry_->gantryInfo.isPositArrived_Joint_Yaw);
       core.gantry_->gantryCmd.setPosit_Stretch = 0.0;

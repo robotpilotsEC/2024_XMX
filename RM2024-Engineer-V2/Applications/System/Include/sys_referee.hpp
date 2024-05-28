@@ -22,6 +22,9 @@
 
 namespace robotpilots {
 
+/**
+ * @brief Referee System Class
+ */
 class CSysReferee final : public CSysInstance {
 public:
 
@@ -49,9 +52,22 @@ public:
 
 private:
 
-  class CUiFigure {
-
+  enum EUiConfigID {
+    TEXT_PUMP = 0,
+    TEXT_MODE,
+    TEXT_CURRENT_MODE,
+    CIRCLE_PUMP_C,
+    CIRCLE_PUMP_L,
+    CIRCLE_PUMP_R,
+    LINE_L,
+    LINE_R,
   };
+
+  std::array<CDevReferee::SUiFigureConfig, 8> uiConfig;
+
+  CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> pumpTextMsg, modeTextMsg, curModeTextMsg;
+
+  CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> stateFigureMsg;
 
   CDevReferee *referee_ = nullptr;
 
@@ -59,9 +75,13 @@ private:
 
   void HeartbeatHandler_() final;
 
+  ERpStatus InitUiDrawing();
+
   ERpStatus UpdateRaceInfo_();
 
   ERpStatus UpdateRobotInfo_();
+
+  ERpStatus UpdateUiDrawing_();
 
   static void StartSysRefereeTask(void *arg);
 
