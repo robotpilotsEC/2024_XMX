@@ -19,6 +19,10 @@
 
 namespace robotpilots {
 
+/**
+ * @brief
+ * @param arg
+ */
 void CSystemCore::StartGoldOreTask(void *arg) {
 
   if (arg == nullptr) proc_return();
@@ -49,7 +53,7 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 
       core.gantry_->gantryCmd.setPumpOn_C = false;
       core.gantry_->gantryCmd.setPosit_Lift = 120.0f;
-      core.gantry_->gantryCmd.setPosit_Stretch = 200.0f;
+      core.gantry_->gantryCmd.setPosit_Stretch = 250.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;

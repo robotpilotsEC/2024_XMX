@@ -337,7 +337,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
     core.gantry_->gantryCmd.setAngle_End_Pitch  = 0.0f;
     proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift
                    && core.gantry_->gantryInfo.isPositArrived_Traverse);
-    core.gantry_->gantryCmd.setPosit_Stretch    = 330.0f;
+    core.gantry_->gantryCmd.setPosit_Stretch    = 410.0f;
     core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
     core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
