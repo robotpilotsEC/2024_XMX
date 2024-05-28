@@ -57,7 +57,7 @@ public:
     ID_UI_DRAW_DOUBLE = 0x0102,
     ID_UI_DRAW_PENTA = 0x0103,
     ID_UI_DRAW_HEPTA = 0x0104,
-    ID_UI_DRAW_TEXT = 0x0104,
+    ID_UI_DRAW_TEXT = 0x0110,
   };
 
   struct SPkgHeader {
@@ -184,7 +184,7 @@ public:
   struct SUiFigureConfig {
     uint8_t figureName[3];                // Ui Figure Configure
     uint8_t operate:3;                    ///< Operation (0 - Null, 1 - Add, 2 - Edit, 3 - Delete)
-    uint8_t figureType:3;                 ///< Figure Type (0 - Line, 1 - Rectangle, 2 - Round, 3 - Ellipse, 4 - Arc, 5 - Float, 6 - Integer, 7 - String)
+    uint8_t figureType:3;                 ///< Figure Type (0 - Line, 1 - Rectangle, 2 - Circle, 3 - Ellipse, 4 - Arc, 5 - Float, 6 - Integer, 7 - String)
     uint8_t layerID:4;                    ///< Layer ID (Range: 0 ~ 9)
     uint8_t color:4;                      ///< Color (0 - Camp Color, 1 - Yellow, 2 - Green, 3 - Orange, 4 - Mulberry, 5 - Pink, 6 - Cyan, 7 - Black, 8 - White)
     uint16_t details_1:9;                 ///< Figure Details 1 (Arc - Start Angle, Text - Font Size)
@@ -211,6 +211,11 @@ public:
 
   struct SUiDrawHeptaMsg {
     SUiFigureConfig figureConfig[7];
+  };
+
+  struct SUiDrawTextMsg {
+    SUiFigureConfig figureConfig;
+    uint8_t text[30];
   };
 
   enum class ERefereeStatus {

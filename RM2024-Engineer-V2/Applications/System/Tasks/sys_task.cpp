@@ -19,6 +19,8 @@
 
 #define deg2rad (3.1415926f / 180.0f)
 
+extern IWDG_HandleTypeDef hiwdg1;
+
 namespace robotpilots {
 
 void JointAngleToEulerAngle (const float32_t *jointAngle, float32_t *eulerAngle);
@@ -31,16 +33,31 @@ void JointAngleToEulerAngle (const float32_t *jointAngle, float32_t *eulerAngle)
 void StartMonitorTask(void *arg) {
 
   auto *uart = reinterpret_cast<CUartInterface *>(InterfaceMap.at(EInterfaceID::INF_UART10));
-
-  int32_t mtrAngle;
+  auto *vision = reinterpret_cast<CSysVision *>(SystemMap.at(ESystemID::SYS_VISION));
 
   /* Monitor Task */
   while (true) {
 
-    mtrAngle = MotorMap.at(EDeviceID::DEV_MANIP_MTR_ROLL)->motorData[CMtrInstance::DATA_ANGLE];
+    uart->FormatTransmit("Robot ID: %d, Camp ID: %d\n",
+                         SysReferee.refereeInfo.robot.robotID,
+                         SysReferee.refereeInfo.robot.robotCamp);
 
-    uart->FormatTransmit("Joint Angle: %d\r\n",
-                         mtrAngle);
+    if (SysVision.systemState != RP_OK) {
+      uart->FormatTransmit("Vision System Error!\n");
+    } else {
+      if (vision->visionInfo.oreTank.isFoundOreTank) {
+        uart->FormatTransmit("YPR: %d, %d, %d\n",
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_YAW),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_PITCH),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_ROLL));
+        uart->FormatTransmit("XYZ: %d, %d, %d\n",
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_X),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Y),
+                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Z));
+      } else {
+        uart->FormatTransmit("Ore Tank Not Found!\n");
+      }
+    }
 
     proc_waitMs(100);  // 10Hz
   }
@@ -120,6 +137,8 @@ void StartHeartbeatTask(void *arg) {
     /* Module Heartbeat */
     for (const auto &item : ModuleMap)
       item.second->HeartbeatHandler_();
+
+    HAL_IWDG_Refresh(&hiwdg1);
 
     proc_waitMs(10);  // 100Hz
   }

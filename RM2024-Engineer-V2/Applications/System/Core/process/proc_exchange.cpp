@@ -114,6 +114,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll -= 90.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
         proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
 
@@ -132,6 +133,8 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 2 */
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
       /* Wait for User Confirmation */
       cnt = 60000*3;
@@ -163,6 +166,8 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 3 */
       core.gantry_->gantryCmd.setPumpOn_C = false;
+      core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
 
       goto proc_exit;
     }
@@ -186,6 +191,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = -90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll += 90.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
         proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
 
@@ -204,6 +210,8 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 2 */
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
       /* Wait for User Confirmation */
       cnt = 60000*3;
@@ -235,6 +243,8 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 2 */
       core.gantry_->gantryCmd.setPumpOn_C = false;
+      core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
 
       goto proc_exit;
     }
@@ -278,14 +288,20 @@ void CSystemCore::StartExchangeTask(void *arg) {
   }
   if (cnt == 0) goto proc_exit;
 
-  /* Step 2 */
   if (abs(oreTankInfo.atti_YAW) < 80.0f) {    // Level 4 Exchange
+    /* Step 2 */
     core.gimbal_->gimbalCmd.setPosit_Lift = 0.0f;
     core.gimbal_->gimbalCmd.setStep_Pitch = 1;
-    core.gantry_->gantryCmd.setPosit_Lift = 550.0f + arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 150.0f;
+//    core.gantry_->gantryCmd.setPosit_Lift = 550.0f + arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 150.0f;
+    core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
+    core.gantry_->gantryCmd.setPosit_Stretch = 200.0f;
     core.gantry_->gantryCmd.setPosit_Traverse   = (oreTankInfo.atti_YAW > 0.0f) ? 0.0f : 190.0f;
     core.gantry_->gantryCmd.setAngle_Joint_Yaw  = 0.0f;
-    core.gantry_->gantryCmd.setAngle_Joint_Roll = -180.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Roll = 180.0f;
+    proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift);
+    core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
+    core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
+
 
     /* Wait for User Confirmation */
     cnt = 60 * 1000 * 3;
@@ -300,22 +316,30 @@ void CSystemCore::StartExchangeTask(void *arg) {
     }
     if (cnt == 0) goto proc_exit;
 
-    /* Step 2 */
-    core.gantry_->gantryCmd.setAngle_Joint_Yaw = -oreTankInfo.atti_YAW;
-    core.gantry_->gantryCmd.setAngle_End_Pitch = -oreTankInfo.atti_PITCH;
-    core.gantry_->gantryCmd.setAngle_End_Roll = oreTankInfo.atti_ROLL;
+    /* Step 3 */
+    core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW;
+    core.gantry_->gantryCmd.setAngle_End_Pitch = -oreTankInfo.atti_PITCH - 20.0f;
+//    core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
+    if (oreTankInfo.atti_YAW > 0.0f)
+      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL + 180.0f;
+    else
+      core.gantry_->gantryCmd.setAngle_End_Roll -= oreTankInfo.atti_ROLL + 180.0f;
 
   } else {    // Level 5 Exchange
+    /* Step 2 */
     core.gimbal_->gimbalCmd.setPosit_Lift = 0.0f;
     core.gimbal_->gimbalCmd.setStep_Pitch = 1;
-    core.gantry_->gantryCmd.setPosit_Lift = 500.0f + arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 150.0f;
+    core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
+//    core.gantry_->gantryCmd.setPosit_Lift = 500.0f + arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 150.0f;
     core.gantry_->gantryCmd.setPosit_Traverse   = (oreTankInfo.atti_YAW > 0.0f) ? 0.0f : 190.0f;
     core.gantry_->gantryCmd.setAngle_Joint_Yaw  = 0.0f;
     core.gantry_->gantryCmd.setAngle_Joint_Roll = (oreTankInfo.atti_YAW > 0.0f) ? 90.0f : -90.0f;
     core.gantry_->gantryCmd.setAngle_End_Pitch  = 0.0f;
     proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift
                    && core.gantry_->gantryInfo.isPositArrived_Traverse);
-    core.gantry_->gantryCmd.setPosit_Stretch    = 330.0f;
+    core.gantry_->gantryCmd.setPosit_Stretch    = 410.0f;
+    core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
+    core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
     /* Wait for User Confirmation */
     cnt = 60 * 1000 * 3;
@@ -332,10 +356,15 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
     /* Step 3 */
     core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
-    core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
-    core.gantry_->gantryCmd.setAngle_Joint_Roll -= oreTankInfo.atti_PITCH;
-    oreTankInfo.atti_YAW -= (oreTankInfo.atti_YAW > 0.0f) ? 90.0f : -90.0f;
-    core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW;
+    if (oreTankInfo.atti_YAW > 0.0f) {    // Level 5 Exchange (Left)
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW - 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = oreTankInfo.atti_PITCH + 90.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
+    } else {    // Level 5 Exchange (Right)
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW + 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = oreTankInfo.atti_PITCH - 90.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
+    }
   }
 
   /* Wait for User Confirmation */
@@ -366,6 +395,26 @@ void CSystemCore::StartExchangeTask(void *arg) {
     proc_waitMs(1);
   }
   if (cnt == 0) goto proc_exit;
+
+  /* Step 4 */
+  core.gantry_->gantryCmd.setPumpOn_C = false;
+
+  /* Wait for User Confirmation */
+  cnt = 60 * 1000 * 3;
+  core.gantry_->gantryCmd.isAutoCtrl = false;      // Unlock Gantry
+  proc_waitMs(500);
+  while (cnt--) {
+    if (SysRemote.remoteInfo.keyboard.key_Ctrl) {
+      if (SysRemote.remoteInfo.keyboard.mouse_L) break;
+      if (SysRemote.remoteInfo.keyboard.mouse_R) goto proc_exit;
+    }
+    proc_waitMs(1);
+  }
+  if (cnt == 0) goto proc_exit;
+
+  /* Step 5 */
+  core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
+  core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
 
   /* Process Exit */
 proc_exit:
