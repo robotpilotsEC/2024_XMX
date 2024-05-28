@@ -84,6 +84,11 @@ void CSysVision::HeartbeatHandler_() {
  */
 ERpStatus CSysVision::UpdateOreTankInfo_() {
 
+  if (vision_->visionState != CDevVision::EVisionStatus::ONLINE) {
+    visionInfo.oreTank = SOreTankInfo();
+    return RP_ERROR;
+  }
+
   visionInfo.oreTank.isFoundOreTank = vision_->oretankinfoPkg.isFoundOreTank;
   visionInfo.oreTank.atti_YAW = vision_->oretankinfoPkg.atti[0];
   visionInfo.oreTank.atti_PITCH = vision_->oretankinfoPkg.atti[1];
@@ -101,6 +106,11 @@ ERpStatus CSysVision::UpdateOreTankInfo_() {
  * @return
  */
 ERpStatus CSysVision::UpdateUiPointInfo_() {
+
+  if (vision_->visionState != CDevVision::EVisionStatus::ONLINE) {
+    visionInfo.uiPoint = SUiPointInfo();
+    return RP_ERROR;
+  }
 
   visionInfo.uiPoint.isFoundOreTank = vision_->oretankinfoPkg.isFoundOreTank;
   visionInfo.uiPoint.pointPosit_X[0] = vision_->oretankinfoPkg.uiPoint_X[0];
@@ -132,8 +142,13 @@ void CSysVision::StartSysVisionTask(void *arg) {
 //    }
 
     CDevVision::SRaceinfoPkg raceInfo;
-    raceInfo.raceCamp = SysReferee.refereeInfo.robot.robotCamp;
-    raceInfo.raceState = 0;
+    if (SysReferee.systemState == RP_OK) {
+      raceInfo.raceCamp = SysReferee.refereeInfo.robot.robotCamp;
+      raceInfo.raceState = SysReferee.refereeInfo.race.raceStage;
+    } else {
+      raceInfo.raceCamp = 0;
+      raceInfo.raceState = 0;
+    }
     SysVision.vision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
 
     proc_waitMs(3);    // 200Hz
