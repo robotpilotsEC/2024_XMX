@@ -45,6 +45,11 @@ ERpStatus CModChassis::CComWheelset::InitComponent(SModInitParam &param) {
   pidYawCtrl.InitAlgorithm(&chassisParam.yawCorrectionPidParam);
 
   /* Clear Motor Output Buffer */
+  yawSpd.resize(1);
+  yawSpdMeasure.resize(1);
+  wheelSpd.resize(4);
+  wheelSpdMeasure.resize(4);
+  output.resize(4);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -76,10 +81,11 @@ ERpStatus CModChassis::CComWheelset::UpdateComponent() {
       motor[RF]->motorData[CMtrInstance::DATA_POSIT] = 0;
       motor[LB]->motorData[CMtrInstance::DATA_POSIT] = 0;
       motor[RB]->motorData[CMtrInstance::DATA_POSIT] = 0;
-      mtrOutputBuffer = {0, 0, 0, 0};
+      mtrOutputBuffer.fill(0);
       pidYawCtrl.ResetAlgorithm();
       pidSpdCtrl.ResetAlgorithm();
       processFlag_ = 2;
+      return RP_OK;
     }
 
     case 2: {   // WheelSet Init
@@ -95,8 +101,11 @@ ERpStatus CModChassis::CComWheelset::UpdateComponent() {
     }
 
     case 3: {   // WheelSet Control
-      DataBuffer<float_t> yawSpd = {wheelsetCmd.speed_W / 10.0f };
-      DataBuffer<float_t> yawSpdMeasure = {mems->memsData[CMemsInstance::DATA_GYRO_Z] };
+
+//      DataBuffer<float_t> yawSpd = {wheelsetCmd.speed_W / 10.0f};
+//      DataBuffer<float_t> yawSpdMeasure = {mems->memsData[CMemsInstance::DATA_GYRO_Z]};
+      yawSpd[0] = wheelsetCmd.speed_W / 10.0f;
+      yawSpdMeasure[0] = mems->memsData[CMemsInstance::DATA_GYRO_Z];
 
       auto output = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);
 
@@ -122,22 +131,16 @@ ERpStatus CModChassis::CComWheelset::_UpdateOutput(float_t speed_X,
                                                    float_t speed_Y,
                                                    float_t speed_W) {
 
-  DataBuffer<float_t> wheelSpd = {
-      speed_Y + speed_X + speed_W,
-    - speed_Y + speed_X + speed_W,
-      speed_Y - speed_X + speed_W,
-    - speed_Y - speed_X + speed_W,
-  };
+  wheelSpd[LF] = speed_Y + speed_X + speed_W;
+  wheelSpd[RF] = - speed_Y + speed_X + speed_W;
+  wheelSpd[LB] = speed_Y - speed_X + speed_W;
+  wheelSpd[RB] = - speed_Y - speed_X + speed_W;
+  wheelSpdMeasure[LF] = static_cast<float_t>(motor[LF]->motorData[CMtrInstance::DATA_SPEED]);
+  wheelSpdMeasure[RF] = static_cast<float_t>(motor[RF]->motorData[CMtrInstance::DATA_SPEED]);
+  wheelSpdMeasure[LB] = static_cast<float_t>(motor[LB]->motorData[CMtrInstance::DATA_SPEED]);
+  wheelSpdMeasure[RB] = static_cast<float_t>(motor[RB]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> wheelSpdMeasure = {
-    static_cast<float_t>(motor[LF]->motorData[CMtrInstance::DATA_SPEED]),
-    static_cast<float_t>(motor[RF]->motorData[CMtrInstance::DATA_SPEED]),
-    static_cast<float_t>(motor[LB]->motorData[CMtrInstance::DATA_SPEED]),
-    static_cast<float_t>(motor[RB]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output
-    = pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure);
+  pidSpdCtrl.UpdatePidController(wheelSpd, wheelSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[LF]),

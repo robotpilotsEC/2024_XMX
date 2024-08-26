@@ -117,6 +117,88 @@ ERpStatus CSystemCore::StartAutoCtrlTask_(EAutoCtrlProcess process) {
 
   StopAutoCtrlTask_();
 
+  switch (process) {
+
+    case EAutoCtrlProcess::NONE: {
+
+      return RP_ERROR;
+    }
+
+    case EAutoCtrlProcess::RETURN_ORIGIN: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_ORIGIN;
+      xTaskCreate(StartReturnOriginTask, "Return Origin Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::RETURN_DRIVE: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::RETURN_DRIVE;
+      xTaskCreate(StartReturnDriveTask, "Return Drive Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::GROUND_ORE: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::GROUND_ORE;
+      xTaskCreate(StartGroundOreTask, "Ground Ore Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::SILVER_ORE: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::SILVER_ORE;
+      xTaskCreate(StartSilverOreTask, "Silver Ore Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::GOLD_ORE: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::GOLD_ORE;
+      xTaskCreate(StartGoldOreTask, "Gold Ore Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::EXCHANGE: {
+
+      currentAutoCtrlProcess_ = EAutoCtrlProcess::EXCHANGE;
+      xTaskCreate(StartExchangeTask, "Exchange Task",
+                  512, this, proc_SystemCoreTaskPriority,
+                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::PUSH_ORE: {
+
+//      currentAutoCtrlProcess_ = EAutoCtrlProcess::PUSH_ORE;
+//      xTaskCreate(StartPushOreTask, "Push Ore Task",
+//                  512, this, proc_SystemCoreTaskPriority,
+//                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    case EAutoCtrlProcess::POP_ORE: {
+
+//      currentAutoCtrlProcess_ = EAutoCtrlProcess::POP_ORE;
+//      xTaskCreate(StartPopOreTask, "Pop Ore Task",
+//                  512, this, proc_SystemCoreTaskPriority,
+//                  &autoCtrlTaskHandle_);
+      return RP_OK;
+    }
+
+    default: return RP_ERROR;
+  }
+
   return RP_ERROR;
 }
 
@@ -134,8 +216,8 @@ ERpStatus CSystemCore::StopAutoCtrlTask_() {
   currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
   /* Clear AutoCtrl Flag */
-//  gimbal_->gimbalCmd.isAutoCtrl       = false;
-  gantry_->gantryCmd.isAutoCtrl       = false;
+  gimbal_->gimbalCmd.isAutoCtrl = false;
+  gantry_->gantryCmd.isAutoCtrl = false;
 
   /* Stop Movement */
 //  gimbal_->gimbalCmd.setPosit_Lift = gimbal_->gimbalInfo.posit_Lift;

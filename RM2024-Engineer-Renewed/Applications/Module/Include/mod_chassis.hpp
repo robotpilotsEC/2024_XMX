@@ -92,6 +92,9 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> yawSpd, yawSpdMeasure, wheelSpd, wheelSpdMeasure, output;
+//    DataBuffer<float_t> wheelSpd, wheelSpdMeasure;
+
     std::array<int16_t, 4> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;

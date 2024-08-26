@@ -85,6 +85,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> liftPos, liftPosMeasure, liftSpd, liftSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -121,6 +123,8 @@ private:
     CPidController pidPosCtrl;
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> pitchPos, pitchPosMeasure, pitchSpd, pitchSpdMeasure, output;
 
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 

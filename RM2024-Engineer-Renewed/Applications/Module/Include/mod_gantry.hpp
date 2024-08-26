@@ -157,6 +157,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> liftPos, liftPosMeasure, liftSpd, liftSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -188,11 +190,13 @@ private:
       int32_t setPosit = 0;
     } traverseCmd;
 
-    std::array<CMtrInstance *, 2> motor = {nullptr};
+    std::array<CMtrInstance *, 2> motor = { nullptr };
 
     CPidController pidPosCtrl;
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> traversePos, traversePosMeasure, traverseSpd, traverseSpdMeasure, output;
 
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
@@ -233,6 +237,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> stretchPos, stretchPosMeasure, stretchSpd, stretchSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -270,6 +276,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> jointYawPos, jointYawPosMeasure, jointYawSpd, jointYawSpdMeasure, output;
+
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -306,6 +314,8 @@ private:
     CPidController pidPosCtrl;
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> jointRollPos, jointRollPosMeasure, jointRollSpd, jointRollSpdMeasure, output;
 
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
@@ -349,6 +359,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> endPos, endPosMeasure, endSpd, endSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -388,6 +400,8 @@ private:
     std::array<CMtrInstance *, 2> motor = {nullptr};
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> flipSpd, flipSpdMeasure, output;
 
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 

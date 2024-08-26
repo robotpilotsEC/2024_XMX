@@ -127,7 +127,7 @@ ERpStatus InitializeModule() {
   gantryInitParam.jointPosPidParam.kp = 0.3f;
   gantryInitParam.jointPosPidParam.ki = 0.0f;
   gantryInitParam.jointPosPidParam.kd = 0.0f;
-  gantryInitParam.jointPosPidParam.maxOutput = 2500;
+  gantryInitParam.jointPosPidParam.maxOutput = 4000;
   gantryInitParam.jointSpdPidParam.kp = 5.0f;
   gantryInitParam.jointSpdPidParam.ki = 0.5f;
   gantryInitParam.jointSpdPidParam.kd = 0.0f;
@@ -138,7 +138,7 @@ ERpStatus InitializeModule() {
   gantryInitParam.endPosPidParam.kp = 0.2f;
   gantryInitParam.endPosPidParam.ki = 0.0f;
   gantryInitParam.endPosPidParam.kd = 0.0f;
-  gantryInitParam.endPosPidParam.maxOutput = 1500;
+  gantryInitParam.endPosPidParam.maxOutput = 4000;
   gantryInitParam.endSpdPidParam.kp = 2.0f;
   gantryInitParam.endSpdPidParam.ki = 0.5f;
   gantryInitParam.endSpdPidParam.kd = 0.0f;

@@ -40,6 +40,11 @@ ERpStatus CModGantry::CComTraverse::InitComponent(SModInitParam &param) {
   pidSpdCtrl.InitAlgorithm(&gantryParam.traverseSpdPidParam);
 
   /* Clear Motor Output Buffer */
+  traversePos.resize(1);
+  traversePosMeasure.resize(1);
+  traverseSpd.resize(1);
+  traverseSpdMeasure.resize(1);
+  output.resize(1);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -154,23 +159,14 @@ float_t CModGantry::CComTraverse::MtrPositToPhyPosit(int32_t mtrPosit) {
  */
 ERpStatus CModGantry::CComTraverse::_UpdateOutput(float_t posit) {
 
-  DataBuffer<float_t> travPos = {
-    static_cast<float_t>(-posit),
-  };
+  traversePos[0] = -posit;
+  traversePosMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]);
 
-  DataBuffer<float_t> travPosMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]),
-  };
+  pidPosCtrl.UpdatePidController(traversePos, traversePosMeasure, traverseSpd);
 
-  auto travSpd =
-    pidPosCtrl.UpdatePidController(travPos, travPosMeasure);
+  traverseSpdMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> travSpdMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output =
-    pidSpdCtrl.UpdatePidController(travSpd, travSpdMeasure);
+  pidSpdCtrl.UpdatePidController(traverseSpd, traverseSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[0]),

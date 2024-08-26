@@ -95,6 +95,8 @@ public:
    */
   DataBuffer<float_t> UpdatePidController(const DataBuffer<float_t> &target, const DataBuffer<float_t> &measure);
 
+  ERpStatus UpdatePidController(const DataBuffer<float_t> &target, const DataBuffer<float_t> &measure, DataBuffer<float_t> &output);
+
   /**
    * @brief Set Maximum Output Value
    * @param value

@@ -115,7 +115,7 @@ void CSystemCore::ControlFromKeyboard_() {
 
   chassis_->chassisCmd.speed_W = keyboard.mouse_X / 2;
   if (keyboard.key_Shift) {
-    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 100.0f;
+    chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 50.0f;
     chassis_->chassisCmd.speed_Y += static_cast<float_t>(keyboard.key_W - keyboard.key_S) * 100.0f;
   } else {
     chassis_->chassisCmd.speed_X += static_cast<float_t>(keyboard.key_D - keyboard.key_A) * 30.0f;
@@ -152,6 +152,36 @@ void CSystemCore::ControlFromKeyboard_() {
       if (keyboard.mouse_L) gantry_->gantryCmd.setPumpOn = true;
       if (keyboard.mouse_R) gantry_->gantryCmd.setPumpOn = false;
     }
+  }
+
+  /* Gantry Auto Control */
+  if (keyboard.key_Ctrl
+      && gimbal_->gimbalInfo.isModuleAvailable
+      && gantry_->gantryInfo.isModuleAvailable) {
+
+    if (keyboard.key_R)
+      StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_ORIGIN);
+
+    if (keyboard.key_Z)
+      StartAutoCtrlTask_(EAutoCtrlProcess::RETURN_DRIVE);
+
+    if (keyboard.key_X)
+      StartAutoCtrlTask_(EAutoCtrlProcess::GROUND_ORE);
+
+    if (keyboard.key_C)
+      StartAutoCtrlTask_(EAutoCtrlProcess::SILVER_ORE);
+
+    if (keyboard.key_V)
+      StartAutoCtrlTask_(EAutoCtrlProcess::GOLD_ORE);
+
+    if (keyboard.key_B)
+      StartAutoCtrlTask_(EAutoCtrlProcess::EXCHANGE);
+
+    if (keyboard.key_F)
+      StartAutoCtrlTask_(EAutoCtrlProcess::PUSH_ORE);
+
+    if (keyboard.key_G)
+      StartAutoCtrlTask_(EAutoCtrlProcess::POP_ORE);
   }
 }
 

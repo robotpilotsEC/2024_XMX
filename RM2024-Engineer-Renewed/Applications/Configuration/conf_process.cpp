@@ -36,7 +36,7 @@ void InitializeProcess() {
 
   /* Create Monitor Task */
   xTaskCreate(StartMonitorTask, "Monitor Task",
-              256, nullptr, proc_MonitorTaskPriority,
+              1024, nullptr, proc_MonitorTaskPriority,
               &MonitorTaskHandle);
 
   /* Create Update Task */
@@ -46,12 +46,12 @@ void InitializeProcess() {
 
   /* Create Heartbeat Task */
   xTaskCreate(StartHeartbeatTask, "Heartbeat Task",
-              1024, nullptr, proc_HeartbeatTaskPriority,
+              2048, nullptr, proc_HeartbeatTaskPriority,
               &HeartbeatTaskHandle);
 
   /* Create System Update Task */
   xTaskCreate(StartSystemUpdateTask, "System Update Task",
-              1024, nullptr, proc_SystemTaskPriority,
+              4096, nullptr, proc_SystemTaskPriority,
               &SystemUpdateTaskHandle);
 }
 

@@ -20,6 +20,7 @@ extern "C" {
   void SystemClock_Config();
   void PeriphCommonClock_Config(void);
 
+  void MX_IWDG1_Init();
   void MX_GPIO_Init();
   void MX_DMA_Init();
   void MX_ADC1_Init();
@@ -64,6 +65,7 @@ int main() {
   PeriphCommonClock_Config();
 
   /* Peripheral Initialize */
+  MX_IWDG1_Init();
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_ADC1_Init();
