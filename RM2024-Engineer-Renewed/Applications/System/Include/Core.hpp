@@ -71,6 +71,22 @@ private:
 
   ERpStatus StopAutoCtrlTask_();
 
+  static void StartReturnOriginTask(void *arg);
+
+  static void StartReturnDriveTask(void *arg);
+
+  static void StartGroundOreTask(void *arg);
+
+  static void StartSilverOreTask(void *arg);
+
+  static void StartGoldOreTask(void *arg);
+
+  static void StartExchangeTask(void *arg);
+
+  static void StartPopOreTask(void *arg);
+
+  static void StartPushOreTask(void *arg);
+
 };
 
 extern CSystemCore SystemCore;

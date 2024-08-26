@@ -17,6 +17,8 @@
 
 #include "Core.hpp"
 
+extern IWDG_HandleTypeDef hiwdg1;
+
 namespace robotpilots {
 
 /**
@@ -46,6 +48,8 @@ void StartHeartbeatTask(void *arg) {
     /* Module Heartbeat */
     for (const auto &item : ModuleMap)
       item.second->HeartbeatHandler_();
+
+    HAL_IWDG_Refresh(&hiwdg1);
 
     proc_waitMs(10);  // 100Hz
   }

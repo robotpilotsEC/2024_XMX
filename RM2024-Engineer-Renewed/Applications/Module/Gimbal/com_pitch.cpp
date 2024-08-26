@@ -40,6 +40,11 @@ ERpStatus CModGimbal::CComPitch::InitComponent(SModInitParam &param) {
   pidSpdCtrl.InitAlgorithm(&gimbalParam.pitchSpdPidParam);
 
   /* Clear Motor Output Buffer */
+  pitchPos.resize(1);
+  pitchPosMeasure.resize(1);
+  pitchSpd.resize(1);
+  pitchSpdMeasure.resize(1);
+  output.resize(1);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -72,8 +77,6 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
     case PITCH_RESET: {
 
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -92,11 +95,11 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
     case PITCH_INIT: {
 
       if (motor[0]->motorState == CMtrInstance::EMotorStatus::STALL) {
-        motor[0]->motorData[CMtrInstance::DATA_POSIT] = +8192 * 1.0;
+        motor[0]->motorData[CMtrInstance::DATA_POSIT] = 8192 * 0.5;
+        mtrOutputBuffer.fill(0);
         pidPosCtrl.ResetAlgorithm();
         pidSpdCtrl.ResetAlgorithm();
-
-        pitchCmd.setPosit = 0;
+        pitchCmd.setPosit = 17000;
         componentState    = RP_OK;
         processFlag_      = PITCH_CTRL;// Enter PITCH_CTRL
         return RP_OK;
@@ -108,7 +111,8 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
 
     case PITCH_CTRL: {
 
-      return RP_OK;
+      pitchCmd.setPosit = std::clamp(pitchCmd.setPosit, 0l, rangeLimit);
+      return _UpdateOutput(static_cast<float_t>(pitchCmd.setPosit));
     }
 
     default: {
@@ -127,23 +131,14 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
  */
 ERpStatus CModGimbal::CComPitch::_UpdateOutput(float_t posit) {
 
-  DataBuffer<float_t> liftPos = {
-    static_cast<float_t>(-posit),
-  };
+  pitchPos[0] = static_cast<float_t>(-posit);
+  pitchPosMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]);
 
-  DataBuffer<float_t> liftPosMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]),
-  };
+  pidPosCtrl.UpdatePidController(pitchPos, pitchPosMeasure, pitchSpd);
 
-  auto liftSpd =
-    pidPosCtrl.UpdatePidController(liftPos, liftPosMeasure);
+  pitchSpdMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> liftSpdMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output =
-    pidSpdCtrl.UpdatePidController(liftSpd, liftSpdMeasure);
+  pidSpdCtrl.UpdatePidController(pitchSpd, pitchSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[0]),

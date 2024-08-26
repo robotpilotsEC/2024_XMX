@@ -38,6 +38,9 @@ ERpStatus CModGantry::CComFlip::InitComponent(SModInitParam &param) {
   pidSpdCtrl.InitAlgorithm(&gantryParam.flipSpdPidParam);
 
   /* Clear Motor Output Buffer */
+  flipSpd.resize(2);
+  flipSpdMeasure.resize(2);
+  output.resize(2);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -71,7 +74,6 @@ ERpStatus CModGantry::CComFlip::UpdateComponent() {
     case FLIP_RESET: {
 
       mtrOutputBuffer.fill(0);
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -80,6 +82,7 @@ ERpStatus CModGantry::CComFlip::UpdateComponent() {
       mtrOutputBuffer.fill(0);
       pidSpdCtrl.ResetAlgorithm();
 
+      processFlag_ = FLIP_CTRL;
       componentState = RP_OK;
       return RP_OK;
     }
@@ -112,22 +115,17 @@ ERpStatus CModGantry::CComFlip::UpdateComponent() {
  * @param speed_W
  * @return
  */
-ERpStatus CModGantry::CComFlip::_UpdateOutput(float_t speed_Y, float_t speed_W) {
+ERpStatus CModGantry::CComFlip::_UpdateOutput(float_t speed_Y,
+                                              float_t speed_W) {
 
   speed_Y += abs(speed_W) * 0.4f;
 
-  DataBuffer<float_t> flipSpd = {
-    speed_W - speed_Y,
-    speed_W + speed_Y,
-  };
+  flipSpd[F] = speed_W - speed_Y;
+  flipSpd[B] = speed_W + speed_Y;
+  flipSpdMeasure[F] = static_cast<float_t>(motor[F]->motorData[CMtrInstance::DATA_SPEED]);
+  flipSpdMeasure[B] = static_cast<float_t>(motor[B]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> flipSpdMeasure = {
-    static_cast<float_t>(motor[F]->motorData[CMtrInstance::DATA_SPEED]),
-    static_cast<float_t>(motor[B]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output =
-    pidSpdCtrl.UpdatePidController(flipSpd, flipSpdMeasure);
+  pidSpdCtrl.UpdatePidController(flipSpd, flipSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[F]),

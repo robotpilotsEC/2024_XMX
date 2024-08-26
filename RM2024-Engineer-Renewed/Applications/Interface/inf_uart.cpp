@@ -59,7 +59,7 @@ ERpStatus CUartInterface::InitInterface(const SInfInitParam *pStruct) {
   if (useTxHandle_) {
     txQueueLength_ = param.txQueueLength;
     txBufferSize_  = param.txBufferSize;
-    txQueue_.clear();
+    txQueue_.resize(txQueueLength_, DataBuffer<uint8_t>(txBufferSize_, 0));
   }
 
   if (useRxHandle_) {
@@ -90,6 +90,11 @@ ERpStatus CUartInterface::StartTransfer() {
     rxQueueIt_ = rxQueue_.begin();
     if (HAL_UARTEx_ReceiveToIdle_DMA(halUartHandle_, rxQueueIt_->data(), rxQueueIt_->size()))
       return RP_ERROR;
+  }
+
+  if (useTxHandle_) {
+    txQueuePopIt_ = txQueue_.begin();
+    txQueuePushIt_ = txQueue_.begin();
   }
 
   interfaceState = RP_BUSY;
@@ -137,13 +142,18 @@ ERpStatus CUartInterface::Transmit(const uint8_t *buffer, size_t len) {
   if (interfaceState == RP_RESET) return RP_ERROR;
 
   if (useTxHandle_) {
-    if (txQueue_.size() >= txQueueLength_) return RP_ERROR;
-    if (len > txBufferSize_) return RP_ERROR;
 
-    txQueue_.emplace_back(buffer, buffer + len);
+    if (len > txBufferSize_
+        || std::distance(txQueuePushIt_, txQueuePopIt_) == 1
+        || std::distance(txQueuePopIt_, txQueuePushIt_) == static_cast<int32_t>(txQueueLength_) - 1)
+      return RP_ERROR;
 
-    if (txQueue_.size() == 1)
-       HAL_UART_Transmit_DMA(halUartHandle_, txQueue_.front().data(), txQueue_.front().size());
+    txQueuePushIt_->assign(buffer, buffer + len);
+
+    if (std::distance(txQueuePushIt_, txQueuePopIt_) == 0)
+      HAL_UART_Transmit_DMA(halUartHandle_, txQueuePopIt_->data(), txQueuePopIt_->size());
+
+    if (++txQueuePushIt_ == txQueue_.end()) txQueuePushIt_ = txQueue_.begin();
 
     return RP_OK;
   }
@@ -243,10 +253,13 @@ void CUartInterface::_UART_HalTxCallback(UART_HandleTypeDef *handle) {
   if (interfaceState == RP_RESET || !useTxHandle_) return;
 
   if (useTxHandle_) {
-    txQueue_.pop_front();
 
-    if (!txQueue_.empty())
-      HAL_UART_Transmit_DMA(halUartHandle_, txQueue_.front().data(), txQueue_.front().size());
+    std::fill(txQueuePopIt_->begin(), txQueuePopIt_->end(), 0);
+
+    if (++txQueuePopIt_ == txQueue_.end()) txQueuePopIt_ = txQueue_.begin();
+
+    if (std::distance(txQueuePushIt_, txQueuePopIt_) != 0)
+      HAL_UART_Transmit_DMA(halUartHandle_, txQueuePopIt_->data(), txQueuePopIt_->size());
   }
 }
 

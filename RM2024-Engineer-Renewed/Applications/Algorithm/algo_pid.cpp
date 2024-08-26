@@ -143,6 +143,34 @@ DataBuffer<float_t> CPidController::UpdatePidController(const DataBuffer<float_t
   return output;
 }
 
+ERpStatus CPidController::UpdatePidController(const DataBuffer<float_t> &target,
+                                              const DataBuffer<float_t> &measure,
+                                              DataBuffer<float_t> &output) {
+
+  /* Check State */
+  if (algoState == RP_RESET) return RP_ERROR;
+  if (algoState == RP_BUSY) return RP_ERROR;
+
+  /* Check Input Data Size */
+  if (target.size() != algoThreadNum) return RP_ERROR;
+  if (measure.size() != algoThreadNum) return RP_ERROR;
+  if (output.size() != algoThreadNum) return RP_ERROR;
+
+  /* Calculate Error Value */
+//  auto error = CalculateErrorValue(target, measure);
+  // TODO: Fix this
+  float_t error[8];
+  for (size_t i = 0; i < algoThreadNum; i++)
+    error[i] = target[i] - measure[i];
+
+  /* Calculate Output */
+  for (size_t i = 0; i < algoThreadNum; i++)
+    output[i] = Calculate_(error[i], threadInfo_[i]);
+
+  return RP_OK;
+}
+
+
 /**
  * @brief Set Maximum Output Value
  * @param value

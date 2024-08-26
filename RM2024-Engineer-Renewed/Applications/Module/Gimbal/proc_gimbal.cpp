@@ -72,6 +72,9 @@ void CModGimbal::StartGimbalModuleTask(void *arg) {
 
         gimbal.comLift_.liftCmd.setPosit =
           CComLift::PhyPositToMtrPosit(gimbal.gimbalCmd.setPosit_Lift);
+        if (gimbal.gimbalCmd.setStep_Pitch == 0) gimbal.comPitch_.pitchCmd.setPosit = 17000;
+        if (gimbal.gimbalCmd.setStep_Pitch == 1) gimbal.comPitch_.pitchCmd.setPosit = 0;
+        if (gimbal.gimbalCmd.setStep_Pitch == 2) gimbal.comPitch_.pitchCmd.setPosit = 34000;
         proc_waitMs(1);   // 1000Hz
         continue;
       }

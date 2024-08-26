@@ -184,7 +184,7 @@ ERpStatus CModGantry::RestrictGantryCommand_() {
 
   /* Mechanical Limit */
   gantryCmd.setPosit_Lift =
-    std::clamp(gantryCmd.setPosit_Lift, 0.0f, 500.0f);
+    std::clamp(gantryCmd.setPosit_Lift, 0.0f, 560.0f);
   gantryCmd.setPosit_Stretch =
     std::clamp(gantryCmd.setPosit_Stretch, 0.0f, 420.0f);
   gantryCmd.setPosit_Traverse =

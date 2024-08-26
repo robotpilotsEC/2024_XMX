@@ -68,7 +68,7 @@ public:
   struct SGantryInfo {
     EFuncStatus isModuleAvailable  = false;        ///< Is Gantry Module Available
     bool isPumpOn                  = false;        ///< Is Pump On
-    float_t posit_Lift             = 0.0f;         ///< Gantry Lift Position (Range: 0mm ~ 660mm)
+    float_t posit_Lift             = 0.0f;         ///< Gantry Lift Position (Range: 0mm ~ 560mm)
     float_t posit_Stretch          = 0.0f;         ///< Gantry Stretch Position (Range: 0mm ~ 420mm)
     float_t posit_Traverse         = 0.0f;         ///< Gantry Traverse Position (Range: -90mm ~ 90mm)
     float_t angle_Joint_Yaw        = 0.0f;         ///< Gantry Joint Yaw Angle (Range: -90° ~ 180°)
@@ -87,7 +87,7 @@ public:
   struct SGantryCmd {
     bool isAutoCtrl             = false;       ///< Is Automatic Control
     bool setPumpOn              = false;       ///< Set Pump On
-    float_t setPosit_Lift       = 0.0f;        ///< Gantry Lift Position (Range: 0mm ~ 660mm)
+    float_t setPosit_Lift       = 0.0f;        ///< Gantry Lift Position (Range: 0mm ~ 560mm)
     float_t setPosit_Stretch    = 0.0f;        ///< Gantry Stretch Position (Range: 0mm ~ 420mm)
     float_t setPosit_Traverse   = 0.0f;        ///< Gantry Traverse Position (Range: -90mm ~ 90mm)
     float_t setAngle_Joint_Yaw  = 180.0f;      ///< Gantry Joint Yaw Angle (Range: -90° ~ 180°)
@@ -157,6 +157,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> liftPos, liftPosMeasure, liftSpd, liftSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -188,11 +190,13 @@ private:
       int32_t setPosit = 0;
     } traverseCmd;
 
-    std::array<CMtrInstance *, 2> motor = {nullptr};
+    std::array<CMtrInstance *, 2> motor = { nullptr };
 
     CPidController pidPosCtrl;
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> traversePos, traversePosMeasure, traverseSpd, traverseSpdMeasure, output;
 
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
@@ -233,6 +237,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> stretchPos, stretchPosMeasure, stretchSpd, stretchSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -270,6 +276,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> jointYawPos, jointYawPosMeasure, jointYawSpd, jointYawSpdMeasure, output;
+
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -306,6 +314,8 @@ private:
     CPidController pidPosCtrl;
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> jointRollPos, jointRollPosMeasure, jointRollSpd, jointRollSpdMeasure, output;
 
     std::array<int16_t, 1> mtrOutputBuffer = {0};
 
@@ -349,6 +359,8 @@ private:
 
     CPidController pidSpdCtrl;
 
+    DataBuffer<float_t> endPos, endPosMeasure, endSpd, endSpdMeasure, output;
+
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 
     ERpStatus InitComponent(SModInitParam &param) final;
@@ -388,6 +400,8 @@ private:
     std::array<CMtrInstance *, 2> motor = {nullptr};
 
     CPidController pidSpdCtrl;
+
+    DataBuffer<float_t> flipSpd, flipSpdMeasure, output;
 
     std::array<int16_t, 2> mtrOutputBuffer = {0};
 

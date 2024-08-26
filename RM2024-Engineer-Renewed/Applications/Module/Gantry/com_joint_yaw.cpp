@@ -40,6 +40,11 @@ ERpStatus CModGantry::CComJointYaw::InitComponent(SModInitParam &param) {
   pidSpdCtrl.InitAlgorithm(&gantryParam.jointSpdPidParam);
 
   /* Clear Motor Output Buffer */
+  jointYawPos.resize(1);
+  jointYawPosMeasure.resize(1);
+  jointYawSpd.resize(1);
+  jointYawSpdMeasure.resize(1);
+  output.resize(1);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -146,23 +151,14 @@ float_t CModGantry::CComJointYaw::MtrPositToPhyPosit(int32_t mtrPosit) {
  */
 ERpStatus CModGantry::CComJointYaw::_UpdateOutput(float_t posit) {
 
-  DataBuffer<float_t> liftPos = {
-    static_cast<float_t>(posit),
-  };
+  jointYawPos[0] = static_cast<float_t>(posit);
+  jointYawPosMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]);
 
-  DataBuffer<float_t> liftPosMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_POSIT]),
-  };
+  pidPosCtrl.UpdatePidController(jointYawPos, jointYawPosMeasure, jointYawSpd);
 
-  auto liftSpd =
-    pidPosCtrl.UpdatePidController(liftPos, liftPosMeasure);
+  jointYawSpdMeasure[0] = static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> liftSpdMeasure = {
-    static_cast<float_t>(motor[0]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output =
-    pidSpdCtrl.UpdatePidController(liftSpd, liftSpdMeasure);
+  pidSpdCtrl.UpdatePidController(jointYawSpd, jointYawSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[0]),

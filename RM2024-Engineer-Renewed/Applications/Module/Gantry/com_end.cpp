@@ -41,6 +41,11 @@ ERpStatus CModGantry::CComEnd::InitComponent(SModInitParam &param) {
   pidSpdCtrl.InitAlgorithm(&gantryParam.endSpdPidParam);
 
   /* Clear Motor Output Buffer */
+  endPos.resize(2);
+  endPosMeasure.resize(2);
+  endSpd.resize(2);
+  endSpdMeasure.resize(2);
+  output.resize(2);
   mtrOutputBuffer.fill(0);
 
   /* Set Component Flags */
@@ -80,8 +85,6 @@ ERpStatus CModGantry::CComEnd::UpdateComponent() {
 
     case END_RESET: {
       mtrOutputBuffer.fill(0);
-      pidPosCtrl.ResetAlgorithm();
-      pidSpdCtrl.ResetAlgorithm();
       return RP_OK;
     }
 
@@ -101,8 +104,8 @@ ERpStatus CModGantry::CComEnd::UpdateComponent() {
           && motor[R]->motorState == CMtrInstance::EMotorStatus::STALL) {
         endCmd.setPosit_Pitch = 0;
         endCmd.setPosit_Roll = 0;
-        motor[L]->motorData[CMtrInstance::DATA_POSIT] = -8192 * 0.5;
-        motor[R]->motorData[CMtrInstance::DATA_POSIT] =  8192 * 0.5;
+        motor[L]->motorData[CMtrInstance::DATA_POSIT] = -8192 * 1.5;
+        motor[R]->motorData[CMtrInstance::DATA_POSIT] =  8192 * 1.5;
         pidPosCtrl.ResetAlgorithm();
         pidSpdCtrl.ResetAlgorithm();
         componentState = RP_OK;
@@ -192,28 +195,20 @@ float_t CModGantry::CComEnd::MtrPositToPhyPosit_Roll(int32_t mtrPosit) {
  * @param posit
  * @return
  */
-ERpStatus CModGantry::CComEnd::_UpdateOutput(float_t posit_Pitch, float_t posit_Roll) {
+ERpStatus CModGantry::CComEnd::_UpdateOutput(float_t posit_Pitch,
+                                             float_t posit_Roll) {
 
-  DataBuffer<float_t> endPos = {
-    posit_Roll + posit_Pitch,
-    posit_Roll - posit_Pitch,
-  };
+  endPos[L] = posit_Roll + posit_Pitch;
+  endPos[R] = posit_Roll - posit_Pitch;
+  endPosMeasure[L] = static_cast<float_t>(motor[L]->motorData[CMtrInstance::DATA_POSIT]);
+  endPosMeasure[R] = static_cast<float_t>(motor[R]->motorData[CMtrInstance::DATA_POSIT]);
 
-  DataBuffer<float_t> endPosMeasure = {
-    static_cast<float_t>(motor[L]->motorData[CMtrInstance::DATA_POSIT]),
-    static_cast<float_t>(motor[R]->motorData[CMtrInstance::DATA_POSIT]),
-  };
+  pidPosCtrl.UpdatePidController(endPos, endPosMeasure, endSpd);
 
-  auto endSpd =
-    pidPosCtrl.UpdatePidController(endPos, endPosMeasure);
+  endSpdMeasure[L] = static_cast<float_t>(motor[L]->motorData[CMtrInstance::DATA_SPEED]);
+  endSpdMeasure[R] = static_cast<float_t>(motor[R]->motorData[CMtrInstance::DATA_SPEED]);
 
-  DataBuffer<float_t> liftSpdMeasure = {
-    static_cast<float_t>(motor[L]->motorData[CMtrInstance::DATA_SPEED]),
-    static_cast<float_t>(motor[R]->motorData[CMtrInstance::DATA_SPEED]),
-  };
-
-  auto output =
-    pidSpdCtrl.UpdatePidController(endSpd, liftSpdMeasure);
+  pidSpdCtrl.UpdatePidController(endSpd, endSpdMeasure, output);
 
   mtrOutputBuffer = {
     static_cast<int16_t>(output[L]),

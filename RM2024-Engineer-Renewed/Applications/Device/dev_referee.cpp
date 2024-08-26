@@ -107,14 +107,14 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
 
     if (item != 0xA5) continue;
 
-    auto header = reinterpret_cast<SPkgHeader *>(item);
+    auto header = reinterpret_cast<const SPkgHeader *>(&item);
     if (CCrcValidator::Crc8Verify(&item, header->CRC8, 4) != RP_OK)
       continue;
 
     switch (header->cmdId) {
 
       case ECommandID::ID_RACE_STATUS: {
-        auto pkg = reinterpret_cast<SRaceStatusPkg *>(item);
+        auto pkg = reinterpret_cast<const SRaceStatusPkg *>(&item);
         if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceStatusPkg) - 2) != RP_OK)
           continue;
         raceStatusPkg = *pkg;
@@ -122,7 +122,7 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
       }
 
       case ECommandID::ID_RACE_RESULT: {
-        auto pkg = reinterpret_cast<SRaceResultPkg *>(item);
+        auto pkg = reinterpret_cast<const SRaceResultPkg *>(&item);
         if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceResultPkg) - 2) != RP_OK)
           return RP_ERROR;
         raceResultPkg = *pkg;
@@ -130,7 +130,7 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
       }
 
       case ECommandID::ID_ROBOT_HP: {
-        auto pkg = reinterpret_cast<SRobotHpPkg *>(item);
+        auto pkg = reinterpret_cast<const SRobotHpPkg *>(&item);
         if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotHpPkg) - 2) != RP_OK)
           return RP_ERROR;
         robotHpPkg = *pkg;
@@ -138,7 +138,7 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
       }
 
       case ECommandID::ID_ROBOT_STATUS: {
-        auto pkg = reinterpret_cast<SRobotStatusPkg *>(item);
+        auto pkg = reinterpret_cast<const SRobotStatusPkg *>(&item);
         if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != RP_OK)
           return RP_ERROR;
         robotStatusPkg = *pkg;
@@ -146,7 +146,7 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
       }
 
       case ECommandID::ID_ROBOT_PERF: {
-        auto pkg = reinterpret_cast<SRobotPerfPkg *>(item);
+        auto pkg = reinterpret_cast<const SRobotPerfPkg *>(&item);
         if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotPerfPkg) - 2) != RP_OK)
           return RP_ERROR;
         robotPerfPkg = *pkg;
