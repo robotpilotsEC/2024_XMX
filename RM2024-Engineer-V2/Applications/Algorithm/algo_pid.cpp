@@ -143,6 +143,34 @@ DataBuffer<float_t> CPidController::UpdatePidController(const DataBuffer<float_t
   return output;
 }
 
+ERpStatus CPidController::UpdatePidController(const DataBuffer<float_t> &target,
+                                              const DataBuffer<float_t> &measure,
+                                              DataBuffer<float_t> &output) {
+
+  /* Check State */
+  if (algoState == RP_RESET) return RP_ERROR;
+  if (algoState == RP_BUSY) return RP_ERROR;
+
+  /* Check Input Data Size */
+  if (target.size() != algoThreadNum) return RP_ERROR;
+  if (measure.size() != algoThreadNum) return RP_ERROR;
+  if (output.size() != algoThreadNum) return RP_ERROR;
+
+  /* Calculate Error Value */
+//  auto error = CalculateErrorValue(target, measure);
+  // TODO: Fix this
+  float_t error[8];
+  for (size_t i = 0; i < algoThreadNum; i++)
+    error[i] = target[i] - measure[i];
+
+  /* Calculate Output */
+  for (size_t i = 0; i < algoThreadNum; i++)
+    output[i] = Calculate_(error[i], threadInfo_[i]);
+
+  return RP_OK;
+}
+
+
 /**
  * @brief Set Maximum Output Value
  * @param value
@@ -221,15 +249,20 @@ float_t CPidController::Calculate_(const float_t err,
                                    SPidThreadInfo &info) {
 
   /* Check Deadband */
-  if (deadband_ != 0 && abs(err) < static_cast<float_t>(deadband_))
+  if (deadband_ != 0 && abs(err) < static_cast<float_t>(deadband_)) {
+    info.integer = 0;
+    info.lastErr = 0;
     return 0.0f;
+  }
 
   /* Calculate Integral */
   info.integer += err / static_cast<float_t>(algoTickRate);
   info.integer = std::clamp(info.integer, static_cast<float_t>(-maxInteger_), static_cast<float_t>(maxInteger_));
 
   /* Calculate Derivative */
-  info.derivative = (err - info.lastErr) / static_cast<float_t>(algoTickRate);
+  info.derivative = info.derivative + 0.1f * ((err - info.lastErr) - info.derivative);  // Low Pass Filter
+//  info.derivative = ((err - info.lastErr) + (info.lastErr - info.llastErr)) / 2;
+//  info.derivative = (err - info.lastErr) * static_cast<float_t>(algoTickRate);
 
   /* Calculate Output */
   info.pOut = kp_ * err;
@@ -240,6 +273,7 @@ float_t CPidController::Calculate_(const float_t err,
   out = std::clamp(out, static_cast<float_t>(-maxOutput_), static_cast<float_t>(maxOutput_));
 
   /* Update Last Error Value */
+//  info.llastErr = info.lastErr;
   info.lastErr = err;
 
   return out;

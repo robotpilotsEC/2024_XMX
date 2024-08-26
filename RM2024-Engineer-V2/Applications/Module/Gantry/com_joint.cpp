@@ -80,17 +80,21 @@ ERpStatus CModGantry::CComJoint::UpdateComponent() {
     }
 
     case JOINT_PREINIT: {
-      motor[YAW]->motorData[CMtrInstance::DATA_POSIT] = motor[YAW]->motorData[CMtrInstance::DATA_ANGLE] - 2148;
-      motor[ROLL]->motorData[CMtrInstance::DATA_POSIT] = motor[ROLL]->motorData[CMtrInstance::DATA_ANGLE] - 434;
+      motor[YAW]->motorData[CMtrInstance::DATA_POSIT] = motor[YAW]->motorData[CMtrInstance::DATA_ANGLE] - 2020;
+      if (motor[YAW]->motorData[CMtrInstance::DATA_POSIT] > 4096)
+        motor[YAW]->motorData[CMtrInstance::DATA_POSIT] -= 8192;
+      motor[ROLL]->motorData[CMtrInstance::DATA_POSIT] = motor[ROLL]->motorData[CMtrInstance::DATA_ANGLE] - 4730;
       processFlag_ = JOINT_INIT;
       return RP_OK;
     }
 
     case JOINT_INIT: {
-      if (abs(jointInfo.posit_Yaw + 2048) < 64 &&
-          abs(jointInfo.posit_Roll - 0) < 64) {
+      if (abs(jointInfo.posit_Yaw + 2048) < 128 &&
+          abs(jointInfo.posit_Roll - 0) < 128) {
         jointCmd.setPosit_Yaw = -2048;
         jointCmd.setPosit_Roll = 0;
+        pidPosCtrl.ResetAlgorithm();
+        pidSpdCtrl.ResetAlgorithm();
         componentState = RP_OK;
         processFlag_ = JOINT_CTRL;
       }
@@ -99,7 +103,7 @@ ERpStatus CModGantry::CComJoint::UpdateComponent() {
 
     case JOINT_CTRL: {
       jointCmd.setPosit_Yaw = std::clamp(jointCmd.setPosit_Yaw, -2048l, rangeLimit_YAW-2048l);
-      jointCmd.setPosit_Roll = std::clamp(jointCmd.setPosit_Roll, 4096l-rangeLimit_ROLL, 4096l);
+      jointCmd.setPosit_Roll = std::clamp(jointCmd.setPosit_Roll, -4096l, rangeLimit_ROLL-4096l);
       return _UpdateOutput(static_cast<float_t>(jointCmd.setPosit_Yaw),
                            static_cast<float_t>(jointCmd.setPosit_Roll));
     }
@@ -124,7 +128,7 @@ ERpStatus CModGantry::CComJoint::UpdateComponent() {
 int32_t CModGantry::CComJoint::PhyPositToMtrPosit_Yaw(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = -22.7555f;
+  const float_t scale = 22.7555f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -138,7 +142,7 @@ int32_t CModGantry::CComJoint::PhyPositToMtrPosit_Yaw(float_t phyPosit) {
 float_t CModGantry::CComJoint::MtrPositToPhyPosit_Yaw(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = -22.7555f;
+  const float_t scale = 22.7555f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

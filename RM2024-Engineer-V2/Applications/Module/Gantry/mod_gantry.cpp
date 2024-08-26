@@ -178,8 +178,6 @@ ERpStatus CModGantry::RestrictGantryCommand_() {
     return RP_ERROR;
   }
 
-  if (gantryCmd.isAutoCtrl) return RP_BUSY;
-
   /* Mechanical Limit */
   gantryCmd.setPosit_Lift =
     std::clamp(gantryCmd.setPosit_Lift, 0.0f, 660.0f);
@@ -190,11 +188,13 @@ ERpStatus CModGantry::RestrictGantryCommand_() {
   gantryCmd.setAngle_Joint_Yaw =
     std::clamp(gantryCmd.setAngle_Joint_Yaw, -90.0f, 90.0f);
   gantryCmd.setAngle_Joint_Roll =
-    std::clamp(gantryCmd.setAngle_Joint_Roll, -135.0f, 180.0f);
+    std::clamp(gantryCmd.setAngle_Joint_Roll, -180.0f, 150.0f);
   gantryCmd.setAngle_End_Pitch =
     std::clamp(gantryCmd.setAngle_End_Pitch, -135.0f, 80.0f);
 
   /* Dynamic Limit */
+  if (gantryCmd.isAutoCtrl) return RP_OK;
+
   if (gantryInfo.posit_Stretch < 150.0f) {
     auto max_JointYaw =  90.0f;
     auto min_JointYaw = -90.0f;

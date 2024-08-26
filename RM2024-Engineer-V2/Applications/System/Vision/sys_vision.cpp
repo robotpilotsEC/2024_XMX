@@ -15,7 +15,7 @@
  * </table>
  */
 
-#include "System.hpp"
+#include "Core.hpp"
 
 namespace robotpilots {
 
@@ -39,11 +39,11 @@ ERpStatus CSysVision::InitSystem(SSystemInitParam *pStruct) {
   systemID = param.systemId;
   vision_ = reinterpret_cast<CDevVision *>(DeviceMap.at(param.visionDevID));
 
-  if (systemTaskHandle != nullptr)
-    vTaskDelete(systemTaskHandle);
-  xTaskCreate(StartSysVisionTask, "System Vision Task",
-              512, nullptr, proc_SystemTaskPriority,
-              &systemTaskHandle);
+//  if (systemTaskHandle != nullptr)
+//    vTaskDelete(systemTaskHandle);
+//  xTaskCreate(StartSysVisionTask, "System Vision Task",
+//              512, nullptr, proc_SystemTaskPriority,
+//              &systemTaskHandle);
 
   RegisterSystem_();
 
@@ -56,6 +56,21 @@ ERpStatus CSysVision::InitSystem(SSystemInitParam *pStruct) {
  * @brief
  */
 void CSysVision::UpdateHandler_() {
+
+  CDevVision::SRaceinfoPkg raceInfo;
+
+  if (SysReferee.systemState == RP_OK) {
+    raceInfo.raceCamp = SysReferee.refereeInfo.robot.robotCamp;
+    raceInfo.raceState = SysReferee.refereeInfo.race.raceStage;
+  } else {
+    raceInfo.raceCamp = 0;
+    raceInfo.raceState = 0;
+  }
+
+  raceInfo.exchangeState =
+    (SystemCore.currentAutoCtrlProcess_ == CSystemCore::EAutoCtrlProcess::EXCHANGE) ? 1 : 0;
+
+  SysVision.vision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
 
   if (systemState != RP_OK) return;
 
@@ -136,12 +151,8 @@ void CSysVision::StartSysVisionTask(void *arg) {
 
   while (true) {
 
-//    if (SysVision.systemState != RP_OK) {
-//      proc_waitMs(100);
-//      continue;
-//    }
-
     CDevVision::SRaceinfoPkg raceInfo;
+
     if (SysReferee.systemState == RP_OK) {
       raceInfo.raceCamp = SysReferee.refereeInfo.robot.robotCamp;
       raceInfo.raceState = SysReferee.refereeInfo.race.raceStage;
@@ -149,9 +160,13 @@ void CSysVision::StartSysVisionTask(void *arg) {
       raceInfo.raceCamp = 0;
       raceInfo.raceState = 0;
     }
+
+    raceInfo.exchangeState =
+      (SystemCore.currentAutoCtrlProcess_ == CSystemCore::EAutoCtrlProcess::EXCHANGE) ? 1 : 0;
+
     SysVision.vision_->SendPackage(CDevVision::ID_RACE_INFO, raceInfo.header);
 
-    proc_waitMs(3);    // 200Hz
+    proc_waitMs(3);    // 333.33Hz
   }
 
 }

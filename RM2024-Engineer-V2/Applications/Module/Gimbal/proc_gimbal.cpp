@@ -46,7 +46,7 @@ void CModGimbal::StartGimbalModuleTask(void *arg) {
         gimbal.comPitch_.StopComponent();
 
         proc_waitMs(20);  // 50Hz
-        continue;
+        break;
       }
 
       case GIMBAL_INIT: {
@@ -59,7 +59,7 @@ void CModGimbal::StartGimbalModuleTask(void *arg) {
         gimbal.gimbalInfo.isModuleAvailable = true;
         gimbal.processFlag_ = GIMBAL_CTRL;
         gimbal.moduleState = RP_OK;
-        continue;
+        break;
       }
 
       case GIMBAL_CTRL: {
@@ -71,7 +71,7 @@ void CModGimbal::StartGimbalModuleTask(void *arg) {
           CComLift::PhyPositToMtrPosit(gimbal.gimbalCmd.setPosit_Lift);
 
         proc_waitMs(1);   // 1000Hz
-        continue;
+        break;
       }
 
       default: { gimbal.StopModule(); }

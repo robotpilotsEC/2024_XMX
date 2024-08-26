@@ -62,7 +62,7 @@ ERpStatus CModGantry::CComTraverse::UpdateComponent() {
 
   /* Update Info */
   traverseInfo.posit = motor[0]->motorData[CMtrInstance::DATA_POSIT];
-  traverseInfo.isPositArrived = (abs(traverseCmd.setPosit - traverseInfo.posit) < 8192 * 2);
+  traverseInfo.isPositArrived = (abs(traverseCmd.setPosit - traverseInfo.posit) < 100000);
 
   /* FSM Status Enum */
   enum {
@@ -129,7 +129,7 @@ ERpStatus CModGantry::CComTraverse::UpdateComponent() {
 int32_t CModGantry::CComTraverse::PhyPositToMtrPosit(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 5868.42f;
+  const float_t scale = 5947.37f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -143,7 +143,7 @@ int32_t CModGantry::CComTraverse::PhyPositToMtrPosit(float_t phyPosit) {
 float_t CModGantry::CComTraverse::MtrPositToPhyPosit(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 5868.42f;
+  const float_t scale = 5947.37f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

@@ -169,7 +169,7 @@ public:
   struct SRobotMsgPkg {
     static_assert(std::is_trivially_copyable<T>::value, "T must be trivially copyable");
     SPkgHeader header;
-    uint16_t messageID;
+    EMessageID messageID;
     uint16_t transmitterID;
     uint16_t receiverID;
     T message;
@@ -236,7 +236,7 @@ private:
 
   CUartInterface *uartInterface_ = nullptr;
 
-  std::array<uint8_t, 256> rxBuffer_ = {0};
+  std::array<uint8_t, 512> rxBuffer_ = {0};
 
   uint32_t rxTimestamp_ = 0;
 

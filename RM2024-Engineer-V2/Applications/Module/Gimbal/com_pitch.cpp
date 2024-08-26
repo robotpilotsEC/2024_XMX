@@ -73,11 +73,13 @@ ERpStatus CModGimbal::CComPitch::UpdateComponent() {
 
     case PITCH_CTRL: {
       if (pitchCmd.setStep == 0)        // Middle
-        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 145);
+        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 80);
       else if (pitchCmd.setStep == 1)   // Up
-        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 120);
+        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 55);
       else if (pitchCmd.setStep == 2)   // Down
-        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 170);
+        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 105);
+      else if (pitchCmd.setStep == 3)   // Vision
+        __HAL_TIM_SET_COMPARE(halTimHandle, timChannel, 70);
       return RP_OK;
     }
 

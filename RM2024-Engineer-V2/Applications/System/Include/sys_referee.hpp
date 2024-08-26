@@ -44,6 +44,7 @@ public:
   };
 
   struct SSysRefereeInfo {
+    time_t unixTimestamp;
     SRaceInfo race;
     SRobotInfo robot;
   } refereeInfo;
@@ -67,23 +68,39 @@ private:
 
   CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawTextMsg> pumpTextMsg, modeTextMsg, curModeTextMsg;
 
-  CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> stateFigureMsg;
+  CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawPentaMsg> visionFigureMsg;
+
+  CDevReferee::SRobotMsgPkg<CDevReferee::SUiDrawHeptaMsg> stateFigureMsg;
 
   CDevReferee *referee_ = nullptr;
+
+  CUartInterface * interface_ = nullptr;
 
   void UpdateHandler_() final;
 
   void HeartbeatHandler_() final;
 
-  ERpStatus InitUiDrawing();
-
   ERpStatus UpdateRaceInfo_();
 
   ERpStatus UpdateRobotInfo_();
 
-  ERpStatus UpdateUiDrawing_();
+  void UI_InitDrawing();
 
-  static void StartSysRefereeTask(void *arg);
+  void UI_StartStaticTextDrawing_();
+
+  void UI_StartCurModeTextDrawing_();
+
+  void UI_StartStateFigureDrawing_();
+
+  void UI_StartVisionFigureDrawing_();
+
+  void UI_UpdateCurModeTextDrawing();
+
+  void UI_UpdateStateFigureDrawing_();
+
+  void UI_UpdateVisionFigureDrawing_();
+
+  static void StartSysRefereeUiTask(void *arg);
 
 };
 

@@ -33,7 +33,6 @@ void CSystemCore::StartGoldOreTask(void *arg) {
   const auto timeout = 60000 / 5;    // unit: ms
 
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
   core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
@@ -53,11 +52,12 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 
       core.gantry_->gantryCmd.setPumpOn_C = false;
       core.gantry_->gantryCmd.setPosit_Lift = 120.0f;
-      core.gantry_->gantryCmd.setPosit_Stretch = 250.0f;
+      core.gantry_->gantryCmd.setPosit_Stretch = 280.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
-      core.gantry_->gantryCmd.setAngle_End_Pitch = -5.0f;
+      core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
         proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
       core.gantry_->gantryCmd.setPumpOn_C = true;
@@ -81,8 +81,10 @@ void CSystemCore::StartGoldOreTask(void *arg) {
       core.gantry_->gantryCmd.setPosit_Stretch =
         core.gantry_->gantryInfo.posit_Stretch - 20.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
-      core.gantry_->gantryCmd.setPosit_Lift += 50.0f;
+      core.gantry_->gantryCmd.setPosit_Lift += 55.0f;
+      core.gantry_->gantryCmd.setAngle_End_Pitch = 3.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift);
+      core.gantry_->gantryCmd.setPosit_Stretch -= 50.0f;
 
       /* Wait for User Confirmation */
       proc_waitMs(500);
@@ -112,12 +114,10 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
-      core.subgantry_->subGantryCmd.setPosit_Stretch_L = 20.0f;
-      core.subgantry_->subGantryCmd.setPosit_Stretch_R = 20.0f;
+      core.subgantry_->subGantryCmd.setPosit_Stretch_L = 30.0f;
+      core.subgantry_->subGantryCmd.setPosit_Stretch_R = 30.0f;
 
-      core.gantry_->gantryCmd.setPumpOn_L = false;
       core.gantry_->gantryCmd.setPumpOn_C = false;
-      core.gantry_->gantryCmd.setPumpOn_R = false;
       proc_waitMs(500);
       core.gantry_->gantryCmd.setPosit_Lift = 0.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 0.0;
@@ -127,13 +127,13 @@ void CSystemCore::StartGoldOreTask(void *arg) {
 
       if (core.gantry_->gantryInfo.posit_Traverse < 100.0f
           && core.gantry_->gantryInfo.angle_Joint_Yaw > 0.0f) {
-        core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+        core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
         core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
       } else {
         core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
         core.gantry_->gantryCmd.setPosit_Stretch = 100.0f;
         proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Traverse);
-        core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+        core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
         core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
       }
 
@@ -152,7 +152,7 @@ void CSystemCore::StartGoldOreTask(void *arg) {
       core.gantry_->gantryCmd.setPumpOn_L = true;
       core.gantry_->gantryCmd.setPumpOn_R = true;
       core.subgantry_->subGantryCmd.setPosit_Stretch_L = 280.0f;
-      core.subgantry_->subGantryCmd.setPosit_Stretch_R = 350.0f;
+      core.subgantry_->subGantryCmd.setPosit_Stretch_R = 360.0f;
 
       /* Wait for User Confirmation */
       proc_waitMs(500);
@@ -175,8 +175,8 @@ void CSystemCore::StartGoldOreTask(void *arg) {
         core.subgantry_->subGantryInfo.posit_Stretch_R - 20.0f;
       proc_waitUntil(core.subgantry_->subGantryInfo.isPositArrived_Stretch_L
                      && core.subgantry_->subGantryInfo.isPositArrived_Stretch_R);
-      core.subgantry_->subGantryCmd.setPosit_Lift_L = 55.0f;
-      core.subgantry_->subGantryCmd.setPosit_Lift_R = 55.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_L = 50.0f;
+      core.subgantry_->subGantryCmd.setPosit_Lift_R = 50.0f;
       proc_waitUntil(core.subgantry_->subGantryInfo.isPositArrived_Lift_L
                      && core.subgantry_->subGantryInfo.isPositArrived_Lift_R);
       proc_waitUntil(500);

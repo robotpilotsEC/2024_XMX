@@ -33,9 +33,23 @@ class CSystemCore {
   friend void StartHeartbeatTask(void *arg);
 public:
 
+  enum class EAutoCtrlProcess {
+    NONE,
+    RETURN_ORIGIN,
+    RETURN_DRIVE,
+    GROUND_ORE,
+    SILVER_ORE,
+    GOLD_ORE,
+    EXCHANGE,
+    PUSH_ORE,
+    POP_ORE,
+  } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
+
   ERpStatus InitSystemCore();
 
 private:
+
+  ERpStatus coreState = RP_RESET;
 
   const float_t freq = 1000.0f;
 
@@ -48,18 +62,6 @@ private:
   CModSubGantry *subgantry_ = nullptr;
 
   TaskHandle_t autoCtrlTaskHandle_ = nullptr;
-
-  enum class EAutoCtrlProcess {
-    NONE,
-    RETURN_ORIGIN,
-    RETURN_DRIVE,
-    GROUND_ORE,
-    SILVER_ORE,
-    GOLD_ORE,
-    EXCHANGE,
-    POP_ORE,
-    PUSH_ORE,
-  } currentAutoCtrlProcess_ = EAutoCtrlProcess::NONE;
 
   void UpdateHandler_();
 

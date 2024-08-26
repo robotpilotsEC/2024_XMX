@@ -70,7 +70,7 @@ public:
     float_t posit_Stretch          = 0.0f;         ///< Gantry Stretch Position (Range: 0mm ~ 410mm)
     float_t posit_Traverse         = 0.0f;         ///< Gantry Traverse Position (Range: 0mm ~ 190mm)
     float_t angle_Joint_Yaw        = 0.0f;         ///< Gantry Joint Yaw Angle (Range: -90° ~ 90°)
-    float_t angle_Joint_Roll       = 0.0f;         ///< Gantry Joint Roll Angle (Range: -180° ~ 135°)
+    float_t angle_Joint_Roll       = 0.0f;         ///< Gantry Joint Roll Angle (Range: -180° ~ 150°)
     float_t angle_End_Pitch        = 0.0f;         ///< Gantry End Pitch Angle (Range: -135° ~ 80°)
     float_t angle_End_Roll         = 0.0f;         ///< Gantry End Roll Angle (Unit: degree)
     bool isPositArrived_Lift       = false;        ///< Is Gantry Lift Position Arrived
@@ -90,8 +90,8 @@ public:
     float_t setPosit_Lift       = 0.0f;        ///< Gantry Lift Position (Range: 0mm ~ 660mm)
     float_t setPosit_Stretch    = 0.0f;        ///< Gantry Stretch Position (Range: 0mm ~ 410mm)
     float_t setPosit_Traverse   = 0.0f;        ///< Gantry Traverse Position (Range: 0mm ~ 190mm)
-    float_t setAngle_Joint_Yaw  = 90.0f;       ///< Gantry Joint Yaw Angle (Range: -90° ~ 90°)
-    float_t setAngle_Joint_Roll = 0.0f;        ///< Gantry Joint Roll Angle (Range: -180° ~ 135°)
+    float_t setAngle_Joint_Yaw  = -90.0f;      ///< Gantry Joint Yaw Angle (Range: -90° ~ 90°)
+    float_t setAngle_Joint_Roll = 0.0f;        ///< Gantry Joint Roll Angle (Range: -180° ~ 150°)
     float_t setAngle_End_Pitch  = 0.0f;        ///< Gantry End Pitch Angle (Range: -135° ~ 80°)
     float_t setAngle_End_Roll   = 0.0f;        ///< Gantry End Roll Angle (Unit: degree)
   } gantryCmd;
@@ -141,7 +141,7 @@ private:
 
     enum { L = 0, R = 1 };
 
-    const int32_t rangeLimit = 615000;
+    const int32_t rangeLimit = 610000;
 
     struct SLiftInfo{
       int32_t posit = 0;
@@ -178,7 +178,7 @@ private:
   class CComTraverse final : public CComponent {
   public:
 
-    const int32_t rangeLimit =  1115000;
+    const int32_t rangeLimit =  1130000;
 
     struct STraverseInfo{
       int32_t posit = 0;
@@ -254,7 +254,7 @@ private:
 
     enum { YAW = 0, ROLL = 1};
 
-    const int32_t rangeLimit_YAW = 4096, rangeLimit_ROLL = 7339;
+    const int32_t rangeLimit_YAW = 4096, rangeLimit_ROLL = 7509;
 
     struct SJointInfo {
       int32_t posit_Yaw = 0;

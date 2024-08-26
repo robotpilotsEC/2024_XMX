@@ -243,6 +243,7 @@ ERpStatus InitializeDevice() {
   manip_mtr_end_l_initparam.useAngleToPosit = true;
   manip_mtr_end_l_initparam.useStallMonit = true;
   manip_mtr_end_l_initparam.stallMonitDataSrc = CMtrInstance::DATA_TORQUE;
+//  manip_mtr_end_l_initparam.stallThreshold = 500;
   manip_mtr_end_l.InitDevice(&manip_mtr_end_l_initparam);
 
   static CMtr_M2006 manip_mtr_end_r;
@@ -253,6 +254,7 @@ ERpStatus InitializeDevice() {
   manip_mtr_end_r_initparam.useAngleToPosit = true;
   manip_mtr_end_r_initparam.useStallMonit = true;
   manip_mtr_end_r_initparam.stallMonitDataSrc = CMtrInstance::DATA_TORQUE;
+//  manip_mtr_end_r_initparam.stallThreshold = 500;
   manip_mtr_end_r.InitDevice(&manip_mtr_end_r_initparam);
 
   return RP_OK;

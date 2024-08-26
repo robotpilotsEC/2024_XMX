@@ -62,7 +62,7 @@ ERpStatus CModGantry::CComLift::UpdateComponent() {
   /* Update Info */
   liftInfo.posit =
       (motor[R]->motorData[CMtrInstance::DATA_POSIT] - motor[L]->motorData[CMtrInstance::DATA_POSIT]) / 2;
-  liftInfo.isPositArrived = (abs(liftCmd.setPosit - liftInfo.posit) < 8192 * 2);
+  liftInfo.isPositArrived = (abs(liftCmd.setPosit - liftInfo.posit) < 8192 * 3);
 
   /* Gantry Lift Component FSM */
   switch (processFlag_) {
@@ -126,7 +126,7 @@ ERpStatus CModGantry::CComLift::UpdateComponent() {
 int32_t CModGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 931.818f;
+  const float_t scale = 924.242f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -140,7 +140,7 @@ int32_t CModGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 float_t CModGantry::CComLift::MtrPositToPhyPosit(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 931.818f;
+  const float_t scale = 924.242f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

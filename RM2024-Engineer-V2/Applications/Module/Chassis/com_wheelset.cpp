@@ -95,7 +95,7 @@ ERpStatus CModChassis::CComWheelset::UpdateComponent() {
     }
 
     case 3: {   // WheelSet Control
-      DataBuffer<float_t> yawSpd = {wheelsetCmd.speed_W / 10.0f };
+      DataBuffer<float_t> yawSpd = { wheelsetCmd.speed_W / 50.0f };
       DataBuffer<float_t> yawSpdMeasure = {mems->memsData[CMemsInstance::DATA_GYRO_Z] };
 
       auto output = pidYawCtrl.UpdatePidController(yawSpd, yawSpdMeasure);

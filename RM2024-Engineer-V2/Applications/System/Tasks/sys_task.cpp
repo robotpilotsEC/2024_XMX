@@ -34,30 +34,31 @@ void StartMonitorTask(void *arg) {
 
   auto *uart = reinterpret_cast<CUartInterface *>(InterfaceMap.at(EInterfaceID::INF_UART10));
   auto *vision = reinterpret_cast<CSysVision *>(SystemMap.at(ESystemID::SYS_VISION));
+  auto *motor_1 = MotorMap.at(EDeviceID::DEV_MANIP_MTR_YAW);
+  auto *motor_2 = MotorMap.at(EDeviceID::DEV_MANIP_MTR_ROLL);
+//  CModGantry *gantry = reinterpret_cast<CModGantry *>(ModuleMap.at(EModuleID::MOD_GANTRY));
 
   /* Monitor Task */
   while (true) {
 
-    uart->FormatTransmit("Robot ID: %d, Camp ID: %d\n",
-                         SysReferee.refereeInfo.robot.robotID,
-                         SysReferee.refereeInfo.robot.robotCamp);
+//    if (SysVision.systemState != RP_OK) {
+//      uart->FormatTransmit("Vision System Error!\r\n");
+//    } else {
+//      if (vision->visionInfo.oreTank.isFoundOreTank) {
+//        uart->FormatTransmit("YPR: %d, %d, %d\r\n",
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_YAW),
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_PITCH),
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_ROLL));
+//        uart->FormatTransmit("XYZ: %d, %d, %d\r\n",
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_X),
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Y),
+//                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Z));
+//      } else {
+//        uart->FormatTransmit("Ore Tank Not Found!\r\n");
+//      }
+//    }
 
-    if (SysVision.systemState != RP_OK) {
-      uart->FormatTransmit("Vision System Error!\n");
-    } else {
-      if (vision->visionInfo.oreTank.isFoundOreTank) {
-        uart->FormatTransmit("YPR: %d, %d, %d\n",
-                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_YAW),
-                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_PITCH),
-                             static_cast<int32_t>(vision->visionInfo.oreTank.atti_ROLL));
-        uart->FormatTransmit("XYZ: %d, %d, %d\n",
-                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_X),
-                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Y),
-                             static_cast<int32_t>(vision->visionInfo.oreTank.posit_Z));
-      } else {
-        uart->FormatTransmit("Ore Tank Not Found!\n");
-      }
-    }
+    uart->FormatTransmit("Yaw: %d, Roll %d\r\n", motor_1->motorData[CMtrInstance::DATA_ANGLE], motor_2->motorData[CMtrInstance::DATA_ANGLE]);
 
     proc_waitMs(100);  // 10Hz
   }
@@ -69,6 +70,8 @@ void StartMonitorTask(void *arg) {
  * @param arg[in] Not Used
  */
 void StartSystemUpdateTask(void *arg) {
+
+//  SystemCore.InitSystemCore();
 
   /* System Update Task */
   while (true) {

@@ -39,7 +39,7 @@ public:
   struct SGimbalInfo {
     EFuncStatus isModuleAvailable = false;    ///< Is Gimbal Module Available
     float_t posit_Lift            = 0.0f;     ///< Gimbal Lift Posit (Range: 0mm ~ 280mm)
-    uint32_t step_pitch           = 0;        ///< Gimbal Pitch Step (0 - MID, 1 - UP, 2 - DOWN)
+    uint32_t step_pitch           = 0;        ///< Gimbal Pitch Step (0 - MID, 1 - UP, 2 - DOWN, 3 - VISION)
     bool isPositArrived_Lift      = false;    ///< Is Gimbal Lift Posit Arrived
   } gimbalInfo;
 

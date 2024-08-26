@@ -110,7 +110,7 @@ ERpStatus CSysRemote::UpdateKeyboard_() {
   /* Soft Reset */
   if (remote_->remoteData[CRc_DR16::CH_KEY_CTRL] == 1
       && remote_->remoteData[CRc_DR16::CH_KEY_SHIFT].chValue == 1
-      && remote_->remoteData[CRc_DR16::CH_KEY_R].chValue == 1) {
+      && remote_->remoteData[CRc_DR16::CH_KEY_B].chValue == 1) {
     __set_FAULTMASK(1);
     NVIC_SystemReset();
   }

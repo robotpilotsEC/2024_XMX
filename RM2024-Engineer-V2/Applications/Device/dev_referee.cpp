@@ -35,7 +35,7 @@ ERpStatus CDevReferee::InitDevice(const SDevInitParam *pStruct) {
   uartInterface_ = static_cast<CUartInterface *>(InterfaceMap.at(param.interfaceId));
 
   auto callback = [this](auto &buffer, auto len) {
-    if (len > 256) return;
+    if (len > 512) return;
     std::copy(buffer.data(), buffer.data() + len, rxBuffer_.data());
     rxTimestamp_ = HAL_GetTick();
 //    ResolveRxPackage_();
@@ -103,58 +103,130 @@ ERpStatus CDevReferee::ResolveRxPackage_() {
   if (refereeState == ERefereeStatus::RESET) return RP_ERROR;
   
   /* Get Package Header */
-  for (const auto &item: rxBuffer_) {
+//  for (const auto &item: rxBuffer_) {
+//
+//    if (item != 0xA5) continue;
+//
+//    auto header = reinterpret_cast<const SPkgHeader *>(&item);
+//    if (CCrcValidator::Crc8Verify(&item, header->CRC8, 4) != RP_OK)
+//      continue;
+//
+//    switch (header->cmdId) {
+//
+//      case ECommandID::ID_RACE_STATUS: {
+//        auto pkg = reinterpret_cast<const SRaceStatusPkg *>(&item);
+//        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceStatusPkg) - 2) != RP_OK)
+//          continue;
+//        raceStatusPkg = *pkg;
+//        break;
+//      }
+//
+//      case ECommandID::ID_RACE_RESULT: {
+//        auto pkg = reinterpret_cast<const SRaceResultPkg *>(&item);
+//        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceResultPkg) - 2) != RP_OK)
+//          return RP_ERROR;
+//        raceResultPkg = *pkg;
+//        break;
+//      }
+//
+//      case ECommandID::ID_ROBOT_HP: {
+//        auto pkg = reinterpret_cast<const SRobotHpPkg *>(&item);
+//        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotHpPkg) - 2) != RP_OK)
+//          return RP_ERROR;
+//        robotHpPkg = *pkg;
+//        break;
+//      }
+//
+//      case ECommandID::ID_ROBOT_STATUS: {
+//        auto pkg = reinterpret_cast<const SRobotStatusPkg *>(&item);
+//        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != RP_OK)
+//          return RP_ERROR;
+//        robotStatusPkg = *pkg;
+//        break;
+//      }
+//
+//      case ECommandID::ID_ROBOT_PERF: {
+//        auto pkg = reinterpret_cast<const SRobotPerfPkg *>(&item);
+//        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotPerfPkg) - 2) != RP_OK)
+//          return RP_ERROR;
+//        robotPerfPkg = *pkg;
+//        break;
+//      }
+//
+//      default: {
+//        return RP_ERROR;
+//      }
+//    }
+//  }
 
-    if (item != 0xA5) continue;
+  for (size_t i = 0; i < rxBuffer_.size(); i++) {
 
-    auto header = reinterpret_cast<const SPkgHeader *>(&item);
-    if (CCrcValidator::Crc8Verify(&item, header->CRC8, 4) != RP_OK)
+    if (rxBuffer_[i] != 0xA5)
+      continue;
+
+    auto header = reinterpret_cast<SPkgHeader *>(&rxBuffer_[i]);
+    if (CCrcValidator::Crc8Verify(reinterpret_cast<uint8_t *>(header), header->CRC8, 4) != RP_OK)
       continue;
 
     switch (header->cmdId) {
 
       case ECommandID::ID_RACE_STATUS: {
-        auto pkg = reinterpret_cast<const SRaceStatusPkg *>(&item);
-        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceStatusPkg) - 2) != RP_OK)
-          continue;
+        if (i + sizeof(SRaceStatusPkg) > rxBuffer_.size())
+          break;
+        auto pkg = reinterpret_cast<SRaceStatusPkg *>(header);
+        if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRaceStatusPkg) - 2) != RP_OK)
+          break;
         raceStatusPkg = *pkg;
+        i += sizeof(SRaceStatusPkg) - 1;
         break;
       }
 
       case ECommandID::ID_RACE_RESULT: {
-        auto pkg = reinterpret_cast<const SRaceResultPkg *>(&item);
-        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRaceResultPkg) - 2) != RP_OK)
-          return RP_ERROR;
+        if (i + sizeof(SRaceResultPkg) > rxBuffer_.size())
+          break;
+        auto pkg = reinterpret_cast<SRaceResultPkg *>(header);
+        if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRaceResultPkg) - 2) != RP_OK)
+          break;
         raceResultPkg = *pkg;
+        i += sizeof(SRaceResultPkg) - 1;
         break;
       }
 
       case ECommandID::ID_ROBOT_HP: {
-        auto pkg = reinterpret_cast<const SRobotHpPkg *>(&item);
-        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotHpPkg) - 2) != RP_OK)
-          return RP_ERROR;
+        if (i + sizeof(SRobotHpPkg) > rxBuffer_.size())
+          break;
+        auto pkg = reinterpret_cast<SRobotHpPkg *>(header);
+        if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotHpPkg) - 2) != RP_OK)
+          break;
         robotHpPkg = *pkg;
+        i += sizeof(SRobotHpPkg) - 1;
         break;
       }
 
       case ECommandID::ID_ROBOT_STATUS: {
-        auto pkg = reinterpret_cast<const SRobotStatusPkg *>(&item);
-        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != RP_OK)
+        if (i + sizeof(SRobotStatusPkg) > rxBuffer_.size())
+          break;
+        auto pkg = reinterpret_cast<SRobotStatusPkg *>(header);
+        if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotStatusPkg) - 2) != RP_OK)
           return RP_ERROR;
         robotStatusPkg = *pkg;
+        i += sizeof(SRobotStatusPkg) - 1;
         break;
       }
 
       case ECommandID::ID_ROBOT_PERF: {
-        auto pkg = reinterpret_cast<const SRobotPerfPkg *>(&item);
-        if (CCrcValidator::Crc16Verify(&item, pkg->CRC16, sizeof(SRobotPerfPkg) - 2) != RP_OK)
-          return RP_ERROR;
+        if (i + sizeof(SRobotPerfPkg) > rxBuffer_.size())
+          break;
+        auto pkg = reinterpret_cast<SRobotPerfPkg *>(header);
+        if (CCrcValidator::Crc16Verify(reinterpret_cast<uint8_t *>(pkg), pkg->CRC16, sizeof(SRobotPerfPkg) - 2) != RP_OK)
+          break;
         robotPerfPkg = *pkg;
+        i += sizeof(SRobotPerfPkg) - 1;
         break;
       }
 
       default: {
-        return RP_ERROR;
+        break;
       }
     }
   }
