@@ -133,13 +133,13 @@ ERpStatus CModSubGantry::RestrictGantryCommand_() {
 
     /* Mechanical Limit */
     subGantryCmd.setPosit_Lift_L =
-      std::clamp(subGantryCmd.setPosit_Lift_L, 0.0f, 120.0f);
+      std::clamp(subGantryCmd.setPosit_Lift_L, 0.0f, 295.0f);
     subGantryCmd.setPosit_Lift_R =
-      std::clamp(subGantryCmd.setPosit_Lift_R, 0.0f, 120.0f);
+      std::clamp(subGantryCmd.setPosit_Lift_R, 0.0f, 295.0f);
     subGantryCmd.setPosit_Stretch_L =
-      std::clamp(subGantryCmd.setPosit_Stretch_L, 0.0f, 350.0f);
+      std::clamp(subGantryCmd.setPosit_Stretch_L, 0.0f, 360.0f);
     subGantryCmd.setPosit_Stretch_R =
-      std::clamp(subGantryCmd.setPosit_Stretch_R, 0.0f, 350.0f);
+      std::clamp(subGantryCmd.setPosit_Stretch_R, 0.0f, 360.0f);
 
     return RP_OK;
 }

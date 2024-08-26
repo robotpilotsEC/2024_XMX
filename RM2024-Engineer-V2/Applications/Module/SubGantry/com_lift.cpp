@@ -98,8 +98,8 @@ ERpStatus CModSubGantry::CComLift::UpdateComponent() {
       if (motor[L]->motorState == CMtrInstance::EMotorStatus::STALL
           && motor[R]->motorState == CMtrInstance::EMotorStatus::STALL) {
         liftCmd = SLiftCmd();
-        motor[L]->motorData[CMtrInstance::DATA_POSIT] = static_cast<int32_t>( 8192 * 1.0);
-        motor[R]->motorData[CMtrInstance::DATA_POSIT] = static_cast<int32_t>(-8192 * 1.0);
+        motor[L]->motorData[CMtrInstance::DATA_POSIT] = static_cast<int32_t>( 8192 * 0.5);
+        motor[R]->motorData[CMtrInstance::DATA_POSIT] = static_cast<int32_t>(-8192 * 0.5);
         pidPosCtrl.ResetAlgorithm();
         pidSpdCtrl.ResetAlgorithm();
         componentState = RP_OK;
@@ -139,7 +139,7 @@ ERpStatus CModSubGantry::CComLift::UpdateComponent() {
 int32_t CModSubGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale      = 3870.83f;
+  const float_t scale      = 3627.12f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -153,7 +153,7 @@ int32_t CModSubGantry::CComLift::PhyPositToMtrPosit(float_t phyPosit) {
 float_t CModSubGantry::CComLift::MtrPositToPhyPosit(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale      = 3870.83f;
+  const float_t scale      = 3627.12f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

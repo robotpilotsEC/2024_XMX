@@ -24,8 +24,10 @@ namespace robotpilots {
 
 /**
  * @brief PID Controller Class
+ *
  * @details By Default, The Input is Considered As Error Value
  * @note Only Implemented Positional PID
+ * @tparam num Number of Threads
  */
 class CPidController : public CAlgoInstance {
 public:
@@ -93,6 +95,8 @@ public:
    */
   DataBuffer<float_t> UpdatePidController(const DataBuffer<float_t> &target, const DataBuffer<float_t> &measure);
 
+  ERpStatus UpdatePidController(const DataBuffer<float_t> &target, const DataBuffer<float_t> &measure, DataBuffer<float_t> &output);
+
   /**
    * @brief Set Maximum Output Value
    * @param value
@@ -125,6 +129,7 @@ private:
     float_t integer = 0.0f;     ///< Integral Cache
     float_t derivative = 0.0f;  ///< Derivative Cache
     float_t lastErr = 0.0f;     ///< Last Error Value
+//    float_t llastErr = 0.0f;    ///< Last Last Error Value
   };
 
   /**

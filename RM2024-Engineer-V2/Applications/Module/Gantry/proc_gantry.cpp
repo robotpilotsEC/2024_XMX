@@ -46,6 +46,7 @@ void CModGantry::StartGantryModuleTask(void *arg) {
       case GANTRY_RESET: {
 
         gantry.gantryInfo.isModuleAvailable = false;
+        gantry.comPump_.StopComponent();
         gantry.comLift_.StopComponent();
         gantry.comStretch_.StopComponent();
         gantry.comTraverse_.StopComponent();
@@ -53,7 +54,7 @@ void CModGantry::StartGantryModuleTask(void *arg) {
         gantry.comEnd_.StopComponent();
 
         proc_waitMs(20);  // 50Hz
-        continue;
+        break;
       }
 
       case GANTRY_INIT: {
@@ -62,11 +63,12 @@ void CModGantry::StartGantryModuleTask(void *arg) {
 
         gantry.comPump_.StartComponent();       // Start Pump Component
         gantry.comLift_.StartComponent();       // Start Lift Component
+        proc_waitUntil(gantry.comLift_.componentState == RP_OK);
+        gantry.comLift_.liftCmd.setPosit = 8192 * 3;
         gantry.comStretch_.StartComponent();    // Start Stretch Component
         gantry.comTraverse_.StartComponent();   // Start Traverse Component
         gantry.comEnd_.StartComponent();        // Start End Component
-        proc_waitUntil(gantry.comLift_.componentState == RP_OK
-                       && gantry.comStretch_.componentState == RP_OK
+        proc_waitUntil(gantry.comStretch_.componentState == RP_OK
                        && gantry.comTraverse_.componentState == RP_OK
                        && gantry.comEnd_.componentState == RP_OK);
 
@@ -77,7 +79,7 @@ void CModGantry::StartGantryModuleTask(void *arg) {
         gantry.gantryInfo.isModuleAvailable = true;
         gantry.processFlag_ = GANTRY_CTRL;      // Enter Control Mode
         gantry.moduleState = RP_OK;
-        continue;
+        break;
       }
 
       case GANTRY_CTRL: {
@@ -103,7 +105,7 @@ void CModGantry::StartGantryModuleTask(void *arg) {
           CComEnd::PhyPositToMtrPosit_Roll(gantry.gantryCmd.setAngle_End_Roll);
 
         proc_waitMs(1);   // 1000Hz
-        continue;
+        break;
       }
 
       default: { gantry.StopModule(); }

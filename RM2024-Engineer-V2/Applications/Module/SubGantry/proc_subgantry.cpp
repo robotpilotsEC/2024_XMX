@@ -50,7 +50,7 @@ void CModSubGantry::StartSubGantryModuleTask(void *arg) {
         subGantry.comStretch_.StopComponent();
 
         proc_waitMs(20);  // 50Hz
-        continue;
+        break;
       }
 
       case SUBGANTRY_INIT: {
@@ -66,7 +66,7 @@ void CModSubGantry::StartSubGantryModuleTask(void *arg) {
         subGantry.subGantryInfo.isModuleAvailable = true;
         subGantry.processFlag_ = SUBGANTRY_CTRL;
         subGantry.moduleState = RP_OK;
-        continue;
+        break;
       }
 
       case SUBGANTRY_CTRL: {
@@ -83,7 +83,7 @@ void CModSubGantry::StartSubGantryModuleTask(void *arg) {
           CComStretch::PhyPositToMtrPosit(subGantry.subGantryCmd.setPosit_Stretch_R);
 
         proc_waitMs(1);  // 1000Hz
-        continue;
+        break;
       }
 
       default: { subGantry.StopModule(); }

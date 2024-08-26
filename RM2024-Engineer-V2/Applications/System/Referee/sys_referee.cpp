@@ -38,14 +38,13 @@ ERpStatus CSysReferee::InitSystem(SSystemInitParam *pStruct) {
   auto &param = *reinterpret_cast<SSysRefereeInitParam *>(pStruct);
   systemID = param.systemId;
   referee_ = reinterpret_cast<CDevReferee *>(DeviceMap.at(param.refereeDevID));
+  interface_ = reinterpret_cast<CUartInterface *>(InterfaceMap.at(EInterfaceID::INF_UART1));
 
   if (systemTaskHandle != nullptr)
     vTaskDelete(systemTaskHandle);
-  xTaskCreate(StartSysRefereeTask, "SysRefereeTask",
+  xTaskCreate(StartSysRefereeUiTask, "SysReferee UI Task",
               512, nullptr, 5,
               &systemTaskHandle);
-
-  InitUiDrawing();
 
   RegisterSystem_();
 
@@ -63,7 +62,6 @@ void CSysReferee::UpdateHandler_() {
 
   UpdateRaceInfo_();
   UpdateRobotInfo_();
-  UpdateUiDrawing_();
 }
 
 
@@ -87,8 +85,13 @@ void CSysReferee::HeartbeatHandler_() {
  */
 ERpStatus CSysReferee::UpdateRaceInfo_() {
 
+
+  refereeInfo.unixTimestamp =
+    referee_->raceStatusPkg.timestamp;
+
   refereeInfo.race.raceType =
     referee_->raceStatusPkg.raceType;
+
   refereeInfo.race.raceStage =
     referee_->raceStatusPkg.raceStage;
 
@@ -110,24 +113,6 @@ ERpStatus CSysReferee::UpdateRobotInfo_() {
     referee_->robotStatusPkg.robotId % 100;
 
   return RP_OK;
-}
-
-
-/**
- * @brief
- * @param arg
- */
-void CSysReferee::StartSysRefereeTask(void *arg) {
-
-  while (true) {
-
-    if (SysReferee.systemState != RP_OK) {
-      proc_waitMs(100);
-      continue;
-    }
-
-    proc_waitMs(50);    // 20Hz
-  }
 }
 
 } // namespace robotpilots

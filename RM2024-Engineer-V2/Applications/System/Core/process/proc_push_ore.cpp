@@ -33,7 +33,6 @@ void CSystemCore::StartPushOreTask(void *arg) {
   const auto timeout = 60000 / 5;    // unit: ms
 
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
   core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
@@ -54,12 +53,12 @@ void CSystemCore::StartPushOreTask(void *arg) {
       core.gantry_->gantryCmd.setPosit_Stretch = 410.0;
       core.gantry_->gantryCmd.setPosit_Traverse = 20.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = -90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = 90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch
                      && core.gantry_->gantryInfo.isPositArrived_Traverse);
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
 
       /* Wait for User Confirmation */
       cnt = timeout;
@@ -111,12 +110,12 @@ void CSystemCore::StartPushOreTask(void *arg) {
       core.gantry_->gantryCmd.setPosit_Stretch = 410.0;
       core.gantry_->gantryCmd.setPosit_Traverse = 170.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = -90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
       proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch
                      && core.gantry_->gantryInfo.isPositArrived_Traverse);
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
 
       /* Wait for User Confirmation */
       cnt = timeout;

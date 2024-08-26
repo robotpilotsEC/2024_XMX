@@ -89,7 +89,6 @@ void CSystemCore::StartExchangeTask(void *arg) {
   CSysVision::SOreTankInfo oreTankInfo;
 
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
   core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
@@ -108,11 +107,11 @@ void CSystemCore::StartExchangeTask(void *arg) {
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 0.0f;
 
       core.gantry_->gantryCmd.setPumpOn_C = true;
-      core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
-      core.gantry_->gantryCmd.setPosit_Stretch = 330.0f;
+      core.gantry_->gantryCmd.setPosit_Lift = 560.0f;
+      core.gantry_->gantryCmd.setPosit_Stretch = 400.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 0.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = 90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = -90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll -= 90.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
@@ -133,6 +132,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 2 */
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = -20.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
@@ -152,12 +152,12 @@ void CSystemCore::StartExchangeTask(void *arg) {
             jointAngle[1] = core.gantry_->gantryInfo.angle_Joint_Roll * deg2rad;
             jointAngle[2] = core.gantry_->gantryInfo.angle_End_Pitch * deg2rad;
             JointAngleToEulerAngle(jointAngle, eulerAngle);
-            core.gantry_->gantryCmd.setPosit_Lift +=
-              sign * arm_sin_f32(-eulerAngle[1]);
+            core.gantry_->gantryCmd.setPosit_Lift -=
+              sign * arm_sin_f32(eulerAngle[1]);
             core.gantry_->gantryCmd.setPosit_Stretch +=
-              sign * arm_cos_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+              sign * arm_cos_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
             core.gantry_->gantryCmd.setPosit_Traverse +=
-              sign * arm_sin_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+              sign * arm_sin_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
           }
         }
         proc_waitMs(1);
@@ -166,8 +166,32 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 3 */
       core.gantry_->gantryCmd.setPumpOn_C = false;
+
+      /* Wait for User Confirmation */
+      cnt = 60 * 1000 * 3;
+      core.gantry_->gantryCmd.isAutoCtrl = false;      // Unlock Gantry
+      proc_waitMs(500);
+      while (cnt--) {
+        if (SysRemote.remoteInfo.keyboard.key_Ctrl) {
+          if (SysRemote.remoteInfo.keyboard.mouse_L) break;
+          if (SysRemote.remoteInfo.keyboard.mouse_R) goto proc_exit;
+        }
+        proc_waitMs(1);
+      }
+      if (cnt == 0) goto proc_exit;
+
+      /* Step 4 */
+      core.gimbal_->gimbalCmd.setPosit_Lift = 150.0f;
+      core.gimbal_->gimbalCmd.setStep_Pitch = 0;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
+      core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Lift = 200.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
 
       goto proc_exit;
     }
@@ -185,11 +209,11 @@ void CSystemCore::StartExchangeTask(void *arg) {
       core.subgantry_->subGantryCmd.setPosit_Stretch_R = 0.0f;
 
       core.gantry_->gantryCmd.setPumpOn_C = true;
-      core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
-      core.gantry_->gantryCmd.setPosit_Stretch = 330.0f;
+      core.gantry_->gantryCmd.setPosit_Lift = 560.0f;
+      core.gantry_->gantryCmd.setPosit_Stretch = 400.0f;
       core.gantry_->gantryCmd.setPosit_Traverse = 190.0f;
       core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = -90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = 90.0f;
       core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
       core.gantry_->gantryCmd.setAngle_End_Roll += 90.0f;
       if (core.gantry_->gantryInfo.posit_Lift < 300.0f)
@@ -210,6 +234,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
       /* Step 2 */
       core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 20.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
@@ -229,22 +254,48 @@ void CSystemCore::StartExchangeTask(void *arg) {
             jointAngle[1] = core.gantry_->gantryInfo.angle_Joint_Roll * deg2rad;
             jointAngle[2] = core.gantry_->gantryInfo.angle_End_Pitch * deg2rad;
             JointAngleToEulerAngle(jointAngle, eulerAngle);
-            core.gantry_->gantryCmd.setPosit_Lift +=
-              sign * arm_sin_f32(-eulerAngle[1]);
+            core.gantry_->gantryCmd.setPosit_Lift -=
+              sign * arm_sin_f32(eulerAngle[1]);
             core.gantry_->gantryCmd.setPosit_Stretch +=
-              sign * arm_cos_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+              sign * arm_cos_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
             core.gantry_->gantryCmd.setPosit_Traverse +=
-              sign * arm_sin_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+              sign * arm_sin_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
           }
+        }
+        if (core.gantry_->gantryCmd.setPosit_Lift < 350.0f)
+          core.gimbal_->gimbalCmd.setPosit_Lift = 280.0f;
+        proc_waitMs(1);
+      }
+      if (cnt == 0) goto proc_exit;
+
+      /* Step 3 */
+      core.gantry_->gantryCmd.setPumpOn_C = false;
+
+      /* Wait for User Confirmation */
+      cnt = 60 * 1000 * 3;
+      core.gantry_->gantryCmd.isAutoCtrl = false;      // Unlock Gantry
+      proc_waitMs(500);
+      while (cnt--) {
+        if (SysRemote.remoteInfo.keyboard.key_Ctrl) {
+          if (SysRemote.remoteInfo.keyboard.mouse_L) break;
+          if (SysRemote.remoteInfo.keyboard.mouse_R) goto proc_exit;
         }
         proc_waitMs(1);
       }
       if (cnt == 0) goto proc_exit;
 
-      /* Step 2 */
-      core.gantry_->gantryCmd.setPumpOn_C = false;
+      /* Step 4 */
+      core.gimbal_->gimbalCmd.setPosit_Lift = 150.0f;
+      core.gimbal_->gimbalCmd.setStep_Pitch = 0;
       core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
       core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
+      core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
+      core.gantry_->gantryCmd.setPosit_Lift = 200.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
 
       goto proc_exit;
     }
@@ -256,7 +307,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
   /* Step 1 */
   core.gimbal_->gimbalCmd.setPosit_Lift = 280.0f;
-  core.gimbal_->gimbalCmd.setStep_Pitch = 0;
+  core.gimbal_->gimbalCmd.setStep_Pitch = 3;
   core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
   core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
   core.subgantry_->subGantryCmd.setPosit_Stretch_L = 0.0f;
@@ -274,6 +325,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
   /* Wait for Vision Identification & User Confirmation */
   cnt = 60 * 1000 * 2;    // 120s
+  core.gantry_->gantryCmd.isAutoCtrl = false;
   while (cnt--) {
     if (SysRemote.remoteInfo.keyboard.key_Ctrl
         && SysRemote.remoteInfo.keyboard.mouse_L
@@ -288,6 +340,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
   }
   if (cnt == 0) goto proc_exit;
 
+  core.gantry_->gantryCmd.isAutoCtrl = true;
   if (abs(oreTankInfo.atti_YAW) < 80.0f) {    // Level 4 Exchange
     /* Step 2 */
     core.gimbal_->gimbalCmd.setPosit_Lift = 0.0f;
@@ -297,7 +350,7 @@ void CSystemCore::StartExchangeTask(void *arg) {
     core.gantry_->gantryCmd.setPosit_Stretch = 200.0f;
     core.gantry_->gantryCmd.setPosit_Traverse   = (oreTankInfo.atti_YAW > 0.0f) ? 0.0f : 190.0f;
     core.gantry_->gantryCmd.setAngle_Joint_Yaw  = 0.0f;
-    core.gantry_->gantryCmd.setAngle_Joint_Roll = 180.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Roll = -180.0f;
     proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift);
     core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
     core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
@@ -317,11 +370,11 @@ void CSystemCore::StartExchangeTask(void *arg) {
     if (cnt == 0) goto proc_exit;
 
     /* Step 3 */
-    core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW;
-    core.gantry_->gantryCmd.setAngle_End_Pitch = -oreTankInfo.atti_PITCH - 20.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Yaw = -oreTankInfo.atti_YAW;
+    core.gantry_->gantryCmd.setAngle_End_Pitch = -(oreTankInfo.atti_PITCH - 3.0f);
 //    core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
     if (oreTankInfo.atti_YAW > 0.0f)
-      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL + 180.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll -= oreTankInfo.atti_ROLL + 180.0f;
     else
       core.gantry_->gantryCmd.setAngle_End_Roll -= oreTankInfo.atti_ROLL + 180.0f;
 
@@ -329,15 +382,18 @@ void CSystemCore::StartExchangeTask(void *arg) {
     /* Step 2 */
     core.gimbal_->gimbalCmd.setPosit_Lift = 0.0f;
     core.gimbal_->gimbalCmd.setStep_Pitch = 1;
-    core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
-//    core.gantry_->gantryCmd.setPosit_Lift = 500.0f + arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 150.0f;
+//    core.gantry_->gantryCmd.setPosit_Lift = 660.0f;
+    core.gantry_->gantryCmd.setPosit_Lift =
+      480.0f - oreTankInfo.posit_Y - arm_sin_f32(oreTankInfo.atti_PITCH * deg2rad) * 330.0f;
+    core.gantry_->gantryCmd.setPosit_Lift =
+      std::clamp(core.gantry_->gantryCmd.setPosit_Lift, 300.0f, 660.0f);
     core.gantry_->gantryCmd.setPosit_Traverse   = (oreTankInfo.atti_YAW > 0.0f) ? 0.0f : 190.0f;
     core.gantry_->gantryCmd.setAngle_Joint_Yaw  = 0.0f;
-    core.gantry_->gantryCmd.setAngle_Joint_Roll = (oreTankInfo.atti_YAW > 0.0f) ? 90.0f : -90.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Roll = (oreTankInfo.atti_YAW > 0.0f) ? -90.0f : 90.0f;
     core.gantry_->gantryCmd.setAngle_End_Pitch  = 0.0f;
     proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Lift
                    && core.gantry_->gantryInfo.isPositArrived_Traverse);
-    core.gantry_->gantryCmd.setPosit_Stretch    = 410.0f;
+    core.gantry_->gantryCmd.setPosit_Stretch    = 400.0f;
     core.subgantry_->subGantryCmd.setPosit_Lift_L = 120.0f;
     core.subgantry_->subGantryCmd.setPosit_Lift_R = 120.0f;
 
@@ -356,19 +412,21 @@ void CSystemCore::StartExchangeTask(void *arg) {
 
     /* Step 3 */
     core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
+    proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_End_Pitch);
+    proc_waitMs(200);
     if (oreTankInfo.atti_YAW > 0.0f) {    // Level 5 Exchange (Left)
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW - 90.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = oreTankInfo.atti_PITCH + 90.0f;
-      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = -(oreTankInfo.atti_YAW - 90.0f) * 0.8f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = -(oreTankInfo.atti_PITCH - 3.0f) - 90.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll -= 90.0f + oreTankInfo.atti_ROLL;
     } else {    // Level 5 Exchange (Right)
-      core.gantry_->gantryCmd.setAngle_Joint_Yaw = oreTankInfo.atti_YAW + 90.0f;
-      core.gantry_->gantryCmd.setAngle_Joint_Roll = oreTankInfo.atti_PITCH - 90.0f;
-      core.gantry_->gantryCmd.setAngle_End_Roll += oreTankInfo.atti_ROLL;
+      core.gantry_->gantryCmd.setAngle_Joint_Yaw = -(oreTankInfo.atti_YAW + 90.0f) * 0.8f;
+      core.gantry_->gantryCmd.setAngle_Joint_Roll = (oreTankInfo.atti_PITCH - 3.0f) + 90.0f;
+      core.gantry_->gantryCmd.setAngle_End_Roll += 90.0f - oreTankInfo.atti_ROLL;
     }
   }
 
   /* Wait for User Confirmation */
-  cnt = 60 * 1000 * 2;    // 120s
+  cnt = 60 * 1000 * 3;    // 180s
   core.gantry_->gantryCmd.isAutoCtrl = false;      // Unlock Gantry
   proc_waitMs(500);
   while (cnt--) {
@@ -378,20 +436,22 @@ void CSystemCore::StartExchangeTask(void *arg) {
         && SysRemote.remoteInfo.keyboard.mouse_R) goto proc_exit;
     if (SysRemote.remoteInfo.keyboard.key_Ctrl
         && SysRemote.remoteInfo.keyboard.mouse_Thumb != 0) {
-      float32_t sign          = SysRemote.remoteInfo.keyboard.mouse_Thumb > 0 ? 0.2f : -0.2f;
+      float32_t sign          = SysRemote.remoteInfo.keyboard.mouse_Thumb > 0 ? 0.5f : -0.5f;
       float32_t jointAngle[3] = {0};
       float32_t eulerAngle[3] = {0};
       jointAngle[0]           = core.gantry_->gantryInfo.angle_Joint_Yaw * deg2rad;
       jointAngle[1]           = core.gantry_->gantryInfo.angle_Joint_Roll * deg2rad;
       jointAngle[2]           = core.gantry_->gantryInfo.angle_End_Pitch * deg2rad;
       JointAngleToEulerAngle(jointAngle, eulerAngle);
-      core.gantry_->gantryCmd.setPosit_Lift +=
-        sign * arm_sin_f32(-eulerAngle[1]);
+      core.gantry_->gantryCmd.setPosit_Lift -=
+        sign * arm_sin_f32(eulerAngle[1]);
       core.gantry_->gantryCmd.setPosit_Stretch +=
-        sign * arm_cos_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+        sign * arm_cos_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
       core.gantry_->gantryCmd.setPosit_Traverse +=
-        sign * arm_sin_f32(-eulerAngle[0]) * arm_cos_f32(-eulerAngle[1]);
+        sign * arm_sin_f32(eulerAngle[0]) * arm_cos_f32(eulerAngle[1]);
     }
+    if (core.gantry_->gantryCmd.setPosit_Lift < 350.0f)
+      core.gimbal_->gimbalCmd.setPosit_Lift = 280.0f;
     proc_waitMs(1);
   }
   if (cnt == 0) goto proc_exit;
@@ -413,8 +473,17 @@ void CSystemCore::StartExchangeTask(void *arg) {
   if (cnt == 0) goto proc_exit;
 
   /* Step 5 */
+  core.gimbal_->gimbalCmd.setPosit_Lift = 150.0f;
+  core.gimbal_->gimbalCmd.setStep_Pitch = 0;
   core.subgantry_->subGantryCmd.setPosit_Lift_L = 0.0f;
   core.subgantry_->subGantryCmd.setPosit_Lift_R = 0.0f;
+  core.gantry_->gantryCmd.setPosit_Traverse = 190.0f / 2;
+  core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
+  core.gantry_->gantryCmd.setPosit_Lift = 200.0f;
+  core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
+  core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
+  core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
+  core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
 
   /* Process Exit */
 proc_exit:

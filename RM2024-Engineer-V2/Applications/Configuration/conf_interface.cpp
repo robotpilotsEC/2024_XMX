@@ -66,10 +66,10 @@ ERpStatus InitializeInterface() {
   inf_referee_initparam.halUartHandle = &huart1;
   inf_referee_initparam.useRxHandle = true;
   inf_referee_initparam.rxQueueLength = 2;
-  inf_referee_initparam.rxBufferSize = 256;
+  inf_referee_initparam.rxBufferSize = 512;
   inf_referee_initparam.useTxHandle = true;
   inf_referee_initparam.txQueueLength = 4;
-  inf_referee_initparam.txBufferSize = 256;
+  inf_referee_initparam.txBufferSize = 512;
   inf_referee.InitInterface(&inf_referee_initparam);
 
   /* Vision (UART7) */

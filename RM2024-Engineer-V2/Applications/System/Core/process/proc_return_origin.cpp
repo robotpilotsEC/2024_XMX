@@ -30,8 +30,9 @@ void CSystemCore::StartReturnOriginTask(void *arg) {
   /* Get System Core Handle */
   auto &core = *reinterpret_cast<CSystemCore *>(arg);
 
+  proc_waitMs(500);
+
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
   core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
@@ -54,19 +55,20 @@ void CSystemCore::StartReturnOriginTask(void *arg) {
   core.gantry_->gantryCmd.setPosit_Traverse = 0.0;
   core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
   core.gantry_->gantryCmd.setAngle_End_Pitch = 0.0f;
-  core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
 
   if (core.gantry_->gantryInfo.posit_Traverse < 100.0f
       && core.gantry_->gantryInfo.angle_Joint_Yaw > 0.0f) {
-    core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
     core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
   } else {
     core.gantry_->gantryCmd.setAngle_Joint_Yaw = 0.0f;
     core.gantry_->gantryCmd.setPosit_Stretch = 100.0f;
     proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Traverse);
-    core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+    core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
     core.gantry_->gantryCmd.setPosit_Stretch = 0.0f;
   }
+  proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_End_Pitch);
+  core.gantry_->gantryCmd.setAngle_End_Roll = 0.0f;
 
   /* Process Exit */
   core.gimbal_->gimbalCmd.isAutoCtrl = false;

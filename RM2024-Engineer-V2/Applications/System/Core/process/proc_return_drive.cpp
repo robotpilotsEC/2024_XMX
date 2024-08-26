@@ -33,13 +33,7 @@ void CSystemCore::StartReturnDriveTask(void *arg) {
   const auto timeout = 60000 / 5;// unit: ms
 
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl       = true;
   core.gantry_->gantryCmd.isAutoCtrl       = true;
-  core.subgantry_->subGantryCmd.isAutoCtrl = true;
-
-  /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
-  core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
   /* Set Gimbal */

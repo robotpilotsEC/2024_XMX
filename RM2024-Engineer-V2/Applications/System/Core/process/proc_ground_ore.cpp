@@ -33,7 +33,6 @@ void CSystemCore::StartGroundOreTask(void *arg) {
   auto cnt = 0;
 
   /* Set Auto Control Flag */
-  core.gimbal_->gimbalCmd.isAutoCtrl = true;
   core.gantry_->gantryCmd.isAutoCtrl = true;
   core.subgantry_->subGantryCmd.isAutoCtrl = true;
 
@@ -52,7 +51,7 @@ void CSystemCore::StartGroundOreTask(void *arg) {
   core.gantry_->gantryCmd.setPosit_Traverse = 0.0f;
   core.gantry_->gantryCmd.setPosit_Stretch = 220.0f;
   proc_waitUntil(core.gantry_->gantryInfo.isPositArrived_Stretch);
-  core.gantry_->gantryCmd.setAngle_Joint_Yaw = 90.0f;
+  core.gantry_->gantryCmd.setAngle_Joint_Yaw = -90.0f;
   core.gantry_->gantryCmd.setAngle_Joint_Roll = 0.0f;
   core.gantry_->gantryCmd.setAngle_End_Pitch = -90.0f;
   core.gantry_->gantryCmd.setPumpOn_C = true;

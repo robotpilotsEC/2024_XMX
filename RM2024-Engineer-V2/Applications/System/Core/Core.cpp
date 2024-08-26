@@ -60,8 +60,9 @@ ERpStatus CSystemCore::InitSystemCore() {
   gantry_    = reinterpret_cast<CModGantry *>(ModuleMap.at(EModuleID::MOD_GANTRY));
   subgantry_ = reinterpret_cast<CModSubGantry *>(ModuleMap.at(EModuleID::MOD_SUBGANTRY));
 
-  proc_waitMs(5000);
+  proc_waitMs(1200);
 
+  coreState = RP_OK;
   return RP_OK;
 }
 
@@ -70,6 +71,10 @@ ERpStatus CSystemCore::InitSystemCore() {
  * @brief
  */
 void CSystemCore::UpdateHandler_() {
+
+  if (coreState == RP_RESET) return;
+
+  if (SysRemote.systemState != RP_OK) return;
 
   if (SysRemote.remoteInfo.remote.switch_L == 2
       && SysRemote.remoteInfo.remote.switch_R == 1)
@@ -96,6 +101,8 @@ void CSystemCore::UpdateHandler_() {
  * @brief
  */
 void CSystemCore::HeartbeatHandler_() {
+
+  if (coreState == RP_RESET) return;
 
   static auto lastRemoteState = RP_RESET;
   auto currentRemoteState = SysRemote.systemState;

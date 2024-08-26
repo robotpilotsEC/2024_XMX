@@ -122,7 +122,7 @@ ERpStatus CModGimbal::RestrictGimbalCommand_() {
   gimbalCmd.setPosit_Lift =
     std::clamp(gimbalCmd.setPosit_Lift, 0.0f, 280.0f);
   gimbalCmd.setStep_Pitch =
-    std::clamp(gimbalCmd.setStep_Pitch, 0ul, 2ul);
+    std::clamp(gimbalCmd.setStep_Pitch, 0ul, 3ul);
 
   return RP_OK;
 }

@@ -52,6 +52,7 @@ public:
     SPkgHeader header;          ///< Package Header
     int16_t raceState = 0;      ///< Race State (0 - Unknown, 1 - Start, 2 - Finish)
     int16_t raceCamp = 0;       ///< Race Camp ID (0 - Unknown, 1 - Red, 2 - Blue)
+    int16_t exchangeState = 0;  ///< Exchange State (0 - None, 1 - On Exchange)
     uint16_t CRC16 = 0x0000;    ///< Package CRC16 Checksum (Default: 0x0000)
   } __packed raceinfoPkg = { };
 

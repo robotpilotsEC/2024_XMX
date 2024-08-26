@@ -159,7 +159,7 @@ private:
   /**
    * @brief
    */
-  std::deque<DataBuffer<uint8_t>> txQueue_, rxQueue_;
+  DataBuffer<DataBuffer<uint8_t>> txQueue_, rxQueue_;
 
   /**
    * @brief
@@ -169,12 +169,14 @@ private:
   /**
    * @brief
    */
-  std::deque<DataBuffer<uint8_t>>::iterator txQueueIt_, rxQueueIt_;
+  DataBuffer<DataBuffer<uint8_t>>::iterator txQueuePushIt_, txQueuePopIt_, rxQueueIt_;
+//  DataBuffer<DataBuffer<uint8_t>>::iterator rxQueueIt_;
+//  size_t txQueuePushIt_, txQueuePopIt_;
 
   /**
    * @brief
    */
-  std::deque<std::function<void(DataBuffer<uint8_t> &, size_t)>> rxCallbackList_;
+  DataBuffer<std::function<void(DataBuffer<uint8_t> &, size_t)>> rxCallbackList_;
 
   /**
    * @brief

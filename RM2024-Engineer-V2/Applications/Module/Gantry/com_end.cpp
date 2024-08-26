@@ -34,13 +34,13 @@ ERpStatus CModGantry::CComEnd::InitComponent(SModInitParam &param) {
   motor[R] = MotorMap.at(gantryParam.endMotorID_R);
 
   /* Initialize PID Controllers */
-  gantryParam.liftPosPidParam.threadNum = 2;
-  gantryParam.liftPosPidParam.tickRate = 500;
-  pidPosCtrl.InitAlgorithm(&gantryParam.liftPosPidParam);
+  gantryParam.endPosPidParam.threadNum = 2;
+  gantryParam.endPosPidParam.tickRate = 500;
+  pidPosCtrl.InitAlgorithm(&gantryParam.endPosPidParam);
 
-  gantryParam.liftSpdPidParam.threadNum = 2;
-  gantryParam.liftSpdPidParam.tickRate = 500;
-  pidSpdCtrl.InitAlgorithm(&gantryParam.liftSpdPidParam);
+  gantryParam.endSpdPidParam.threadNum = 2;
+  gantryParam.endSpdPidParam.tickRate = 500;
+  pidSpdCtrl.InitAlgorithm(&gantryParam.endSpdPidParam);
 
   /* Clear Motor Output Buffer */
   mtrOutputBuffer.fill(0);
@@ -101,8 +101,8 @@ ERpStatus CModGantry::CComEnd::UpdateComponent() {
           && motor[R]->motorState == CMtrInstance::EMotorStatus::STALL) {
         endCmd.setPosit_Pitch = 160744;
         endCmd.setPosit_Roll = 0;
-        motor[L]->motorData[CMtrInstance::DATA_POSIT] = -(rangeLimit + (8192 * 4.0));
-        motor[R]->motorData[CMtrInstance::DATA_POSIT] =  (rangeLimit + (8192 * 4.0));
+        motor[L]->motorData[CMtrInstance::DATA_POSIT] = -(rangeLimit + (8192 * 1.5));
+        motor[R]->motorData[CMtrInstance::DATA_POSIT] =  (rangeLimit + (8192 * 1.5));
         pidPosCtrl.ResetAlgorithm();
         pidSpdCtrl.ResetAlgorithm();
         componentState = RP_OK;
@@ -139,7 +139,7 @@ ERpStatus CModGantry::CComEnd::UpdateComponent() {
 int32_t CModGantry::CComEnd::PhyPositToMtrPosit_Pitch(float_t phyPosit) {
 
   const int32_t zeroOffset = 160744;
-  const float_t scale = 1300.00f;
+  const float_t scale = 1450.00f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -153,7 +153,7 @@ int32_t CModGantry::CComEnd::PhyPositToMtrPosit_Pitch(float_t phyPosit) {
 float_t CModGantry::CComEnd::MtrPositToPhyPosit_Pitch(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 160744;
-  const float_t scale = 1300.00f;
+  const float_t scale = 1450.00f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }
@@ -167,7 +167,7 @@ float_t CModGantry::CComEnd::MtrPositToPhyPosit_Pitch(int32_t mtrPosit) {
 int32_t CModGantry::CComEnd::PhyPositToMtrPosit_Roll(float_t phyPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 2300.0f;
+  const float_t scale = 2540.00f;
 
   return (static_cast<int32_t>(phyPosit * scale) + zeroOffset);
 }
@@ -181,7 +181,7 @@ int32_t CModGantry::CComEnd::PhyPositToMtrPosit_Roll(float_t phyPosit) {
 float_t CModGantry::CComEnd::MtrPositToPhyPosit_Roll(int32_t mtrPosit) {
 
   const int32_t zeroOffset = 0;
-  const float_t scale = 2300.0f;
+  const float_t scale = 2540.00f;
 
   return (static_cast<float_t>(mtrPosit - zeroOffset) / scale);
 }

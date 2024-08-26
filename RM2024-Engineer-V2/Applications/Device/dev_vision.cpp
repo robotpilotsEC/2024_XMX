@@ -67,7 +67,7 @@ ERpStatus CDevVision::SendPackage(EPackageID packageID, SPkgHeader &packageHeade
      pkg->header.SOF = 0xA5;
      pkg->header.id = ID_ORETANK_INFO;
      pkg->header.len = sizeof(SOretankinfoPkg) - sizeof(SPkgHeader) - 2;
-     pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&pkg->header), sizeof(SPkgHeader) - 1);
+     pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), sizeof(SPkgHeader) - 1);
      pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SOretankinfoPkg) - 2);
 
      return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SOretankinfoPkg));
@@ -78,7 +78,7 @@ ERpStatus CDevVision::SendPackage(EPackageID packageID, SPkgHeader &packageHeade
      pkg->header.SOF = 0xA5;
      pkg->header.id = ID_RACE_INFO;
      pkg->header.len = sizeof(SRaceinfoPkg) - sizeof(SPkgHeader) - 2;
-     pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&pkg->header), sizeof(SPkgHeader) - 1);
+     pkg->header.CRC8 = CCrcValidator::Crc8Calculate(reinterpret_cast<uint8_t *>(&(pkg->header)), sizeof(SPkgHeader) - 1);
      pkg->CRC16 = CCrcValidator::Crc16Calculate(reinterpret_cast<uint8_t *>(pkg), sizeof(SRaceinfoPkg) - 2);
 
      return uartInterface_->Transmit(reinterpret_cast<uint8_t *>(pkg), sizeof(SRaceinfoPkg));

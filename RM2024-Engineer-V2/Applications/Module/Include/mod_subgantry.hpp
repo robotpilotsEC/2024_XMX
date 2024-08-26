@@ -40,10 +40,10 @@ public:
 
   struct SSubGantryInfo {
     EFuncStatus isModuleAvailable = false;      ///< Is SubGantry Module Available
-    float_t posit_Lift_L = 0.0f;                ///< Sub-Gantry Lift Posit Left (Range: 0mm ~ 120mm)
-    float_t posit_Lift_R = 0.0f;                ///< Sub-Gantry Lift Posit Right (Range: 0mm ~ 120mm)
-    float_t posit_Stretch_L = 0.0f;             ///< Sub-Gantry Stretch Posit Left (Range: 0mm ~ 350mm)
-    float_t posit_Stretch_R = 0.0f;             ///< Sub-Gantry Stretch Posit Right (Range: 0mm ~ 350mm)
+    float_t posit_Lift_L = 0.0f;                ///< Sub-Gantry Lift Posit Left (Range: 0mm ~ 295mm)
+    float_t posit_Lift_R = 0.0f;                ///< Sub-Gantry Lift Posit Right (Range: 0mm ~ 295mm)
+    float_t posit_Stretch_L = 0.0f;             ///< Sub-Gantry Stretch Posit Left (Range: 0mm ~ 360mm)
+    float_t posit_Stretch_R = 0.0f;             ///< Sub-Gantry Stretch Posit Right (Range: 0mm ~ 360mm)
     bool isPositArrived_Lift_L = false;         ///< Is Sub-Gantry Lift Posit Left Arrived
     bool isPositArrived_Lift_R = false;         ///< Is Sub-Gantry Lift Posit Right Arrived
     bool isPositArrived_Stretch_L = false;      ///< Is Sub-Gantry Stretch Posit Left Arrived
@@ -52,10 +52,10 @@ public:
 
   struct SSubGantryCmd {
     bool isAutoCtrl = false;
-    float_t setPosit_Lift_L = 0.0f;             ///< Set Sub-Gantry Lift Posit Left (Range: 0mm ~ 120mm)
-    float_t setPosit_Lift_R = 0.0f;             ///< Set Sub-Gantry Lift Posit Right (Range: 0mm ~ 120mm)
-    float_t setPosit_Stretch_L = 0.0f;          ///< Set Sub-Gantry Stretch Posit Left (Range: 0mm ~ 350mm)
-    float_t setPosit_Stretch_R = 0.0f;          ///< Set Sub-Gantry Stretch Posit Right (Range: 0mm ~ 350mm)
+    float_t setPosit_Lift_L = 0.0f;             ///< Set Sub-Gantry Lift Posit Left (Range: 0mm ~ 295mm)
+    float_t setPosit_Lift_R = 0.0f;             ///< Set Sub-Gantry Lift Posit Right (Range: 0mm ~ 295mm)
+    float_t setPosit_Stretch_L = 0.0f;          ///< Set Sub-Gantry Stretch Posit Left (Range: 0mm ~ 360mm)
+    float_t setPosit_Stretch_R = 0.0f;          ///< Set Sub-Gantry Stretch Posit Right (Range: 0mm ~ 360mm)
   } subGantryCmd;
 
   CModSubGantry() = default;
@@ -76,7 +76,7 @@ private:
 
     enum { L = 0, R = 1 };
 
-    const int32_t rangeLimit = 464500;
+    const int32_t rangeLimit = 1070000;
 
     struct SLiftInfo {
       int32_t posit_L = 0;
